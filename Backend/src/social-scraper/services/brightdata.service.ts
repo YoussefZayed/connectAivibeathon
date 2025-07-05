@@ -227,19 +227,188 @@ export class BrightDataService {
     }
   }
 
+  async scrapeFacebookProfile(url: string): Promise<ScrapingResponse> {
+    try {
+      const data = JSON.stringify([{ url }]);
+      const response = await this.makeBrightDataRequest(
+        this.config.datasets.facebook_profile,
+        data,
+      );
+
+      if (
+        response.data &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        return {
+          success: true,
+          data: response.data[0],
+          platform: 'facebook',
+        };
+      }
+
+      return {
+        success: false,
+        error: 'No data returned from Facebook scraping',
+        platform: 'facebook',
+      };
+    } catch (error) {
+      this.logger.error(`Facebook scraping failed for ${url}:`, error);
+      return {
+        success: false,
+        error: error.message,
+        platform: 'facebook',
+      };
+    }
+  }
+
+  async scrapeTwitterProfile(url: string): Promise<ScrapingResponse> {
+    try {
+      const data = JSON.stringify([{ url }]);
+      const response = await this.makeBrightDataRequest(
+        this.config.datasets.twitter_profile,
+        data,
+      );
+
+      if (
+        response.data &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        return {
+          success: true,
+          data: response.data[0],
+          platform: 'twitter',
+        };
+      }
+
+      return {
+        success: false,
+        error: 'No data returned from Twitter scraping',
+        platform: 'twitter',
+      };
+    } catch (error) {
+      this.logger.error(`Twitter scraping failed for ${url}:`, error);
+      return {
+        success: false,
+        error: error.message,
+        platform: 'twitter',
+      };
+    }
+  }
+
+  async scrapeYouTubeProfile(url: string): Promise<ScrapingResponse> {
+    try {
+      const data = JSON.stringify([{ url }]);
+      const response = await this.makeBrightDataRequest(
+        this.config.datasets.youtube_profile,
+        data,
+      );
+
+      if (
+        response.data &&
+        Array.isArray(response.data) &&
+        response.data.length > 0
+      ) {
+        return {
+          success: true,
+          data: response.data[0],
+          platform: 'youtube',
+        };
+      }
+
+      return {
+        success: false,
+        error: 'No data returned from YouTube scraping',
+        platform: 'youtube',
+      };
+    } catch (error) {
+      this.logger.error(`YouTube scraping failed for ${url}:`, error);
+      return {
+        success: false,
+        error: error.message,
+        platform: 'youtube',
+      };
+    }
+  }
+
   private async makeBrightDataRequest(
     datasetId: string,
     data: string,
     additionalParams: string = '',
   ): Promise<AxiosResponse> {
     const url = `https://api.brightdata.com/datasets/v3/trigger?dataset_id=${datasetId}&include_errors=true${additionalParams}`;
+    const maxRetries = 3;
+    const baseDelay = 1000; // 1 second
 
-    return axios.post(url, data, {
-      headers: {
-        Authorization: `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      timeout: 30000, // 30 seconds timeout
-    });
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        // Add delay between attempts (exponential backoff)
+        if (attempt > 1) {
+          const delay = baseDelay * Math.pow(2, attempt - 1);
+          this.logger.log(
+            `Retrying BrightData request (attempt ${attempt}/${maxRetries}) after ${delay}ms delay`,
+          );
+          await this.delay(delay);
+        }
+
+        const response = await axios.post(url, data, {
+          headers: {
+            Authorization: `Bearer ${this.config.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 30000, // 30 seconds timeout
+        });
+
+        // Add a small delay between successful requests to avoid rate limiting
+        await this.delay(500); // 500ms delay between requests
+
+        return response;
+      } catch (error) {
+        const isLastAttempt = attempt === maxRetries;
+        const isRetryableError = this.isRetryableError(error);
+
+        if (isLastAttempt || !isRetryableError) {
+          this.logger.error(
+            `BrightData request failed after ${attempt} attempts:`,
+            error,
+          );
+          throw error;
+        }
+
+        this.logger.warn(
+          `BrightData request failed (attempt ${attempt}/${maxRetries}), retrying...`,
+          error,
+        );
+      }
+    }
+
+    throw new Error('Max retries exceeded for BrightData request');
+  }
+
+  private async delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private isRetryableError(error: any): boolean {
+    // Check if error is retryable (network errors, 5xx errors, timeouts)
+    if (
+      error.code === 'ECONNRESET' ||
+      error.code === 'ETIMEDOUT' ||
+      error.code === 'ENOTFOUND'
+    ) {
+      return true;
+    }
+
+    if (error.response?.status >= 500 && error.response?.status < 600) {
+      return true;
+    }
+
+    if (error.response?.status === 429) {
+      // Rate limit
+      return true;
+    }
+
+    return false;
   }
 }

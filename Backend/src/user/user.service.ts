@@ -94,7 +94,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
+
     return {
       facebook_url: user.facebook_url,
       instagram_url: user.instagram_url,
@@ -105,19 +105,22 @@ export class UserService {
     };
   }
 
-  async updateSocialMediaUrls(userId: number, socialMediaUrls: {
-    facebook_url?: string | null;
-    instagram_url?: string | null;
-    linkedin_url?: string | null;
-    tiktok_url?: string | null;
-    twitter_url?: string | null;
-    youtube_url?: string | null;
-  }) {
+  async updateSocialMediaUrls(
+    userId: number,
+    socialMediaUrls: {
+      facebook_url?: string | null;
+      instagram_url?: string | null;
+      linkedin_url?: string | null;
+      tiktok_url?: string | null;
+      twitter_url?: string | null;
+      youtube_url?: string | null;
+    },
+  ) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
+
     return this.userRepository.updateSocialMediaUrls(userId, socialMediaUrls);
   }
 }

@@ -5,9 +5,10 @@ import { BrightDataService } from './services/brightdata.service';
 import { KnowledgeBaseService } from './services/knowledge-base.service';
 import { DbModule } from '../core/db/db.module';
 import { UserRepository } from '../user/user.repository';
+import { KnowledgeBaseModule } from '../knowledge-base/knowledge-base.module';
 
 @Module({
-  imports: [DbModule],
+  imports: [DbModule, KnowledgeBaseModule],
   controllers: [SocialScraperController],
   providers: [
     SocialScraperService,

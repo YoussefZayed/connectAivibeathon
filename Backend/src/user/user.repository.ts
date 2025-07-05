@@ -70,7 +70,7 @@ export class UserRepository {
 
       return { contact1, contact2 };
     });
-    }
+  }
 
   async updateSocialMediaData(userId: number, socialMediaData: any) {
     return await this.db
@@ -197,14 +197,17 @@ export class UserRepository {
       .executeTakeFirst();
   }
 
-  async updateSocialMediaUrls(userId: number, socialMediaUrls: {
-    facebook_url?: string | null;
-    instagram_url?: string | null;
-    linkedin_url?: string | null;
-    tiktok_url?: string | null;
-    twitter_url?: string | null;
-    youtube_url?: string | null;
-  }) {
+  async updateSocialMediaUrls(
+    userId: number,
+    socialMediaUrls: {
+      facebook_url?: string | null;
+      instagram_url?: string | null;
+      linkedin_url?: string | null;
+      tiktok_url?: string | null;
+      twitter_url?: string | null;
+      youtube_url?: string | null;
+    },
+  ) {
     return await this.db
       .updateTable('user')
       .set(socialMediaUrls)
