@@ -1,0 +1,22 @@
+---
+alwaysApply: true
+---
+
+# Backend Endpoint Development
+
+When adding a new backend endpoint, you must follow these steps:
+
+1.  **Define the Contract**: Create a new contract file in `Backend/src/contracts`. Use `zod` to define the request body, query parameters, and response schemas.
+2.  **Update Main Contract**: Add your new contract to the main contract object in `Backend/src/contracts/index.ts`.
+3.  **Implement the Controller**: In the controller, use the `@ts-rest/nest`'s `tsRestHandler` to connect your implementation with the contract.
+
+You can reference `Backend/src/health/health.contract.ts` and `Backend/src/health/health.controller.ts` as examples.
+# Backend Endpoint Development
+
+When adding a new backend endpoint, you must follow these steps:
+
+1.  **Define the Contract**: Create a new contract file in `Backend/src/contracts`. Use `zod` to define the request body, query parameters, and response schemas.
+2.  **Update Main Contract**: Add your new contract to the main contract object in `Backend/src/contracts/index.ts`.
+3.  **Implement the Controller**: In the controller, use the `@ts-rest/nest`'s `tsRestHandler` to connect your implementation with the contract.
+
+You can reference `Backend/src/health/health.contract.ts` and `Backend/src/health/health.controller.ts` as examples.
