@@ -72,6 +72,57 @@ export class UserRepository {
     });
   }
 
+  async updateSocialMediaUrls(
+    userId: number,
+    socialMediaUrls: {
+      linkedin_url?: string;
+      facebook_url?: string;
+      instagram_url?: string;
+      twitter_url?: string;
+      youtube_url?: string;
+      tiktok_url?: string;
+    },
+  ) {
+    return await this.db
+      .updateTable('user')
+      .set(socialMediaUrls)
+      .where('id', '=', userId)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
+
+  async updateSocialMediaData(userId: number, socialMediaData: any) {
+    return await this.db
+      .updateTable('user')
+      .set({
+        social_media_data: socialMediaData,
+        last_scraped_at: new Date(),
+      })
+      .where('id', '=', userId)
+      .returningAll()
+      .executeTakeFirstOrThrow();
+  }
+
+  async getContacts(userId: number) {
+    return await this.db
+      .selectFrom('user_contacts as uc')
+      .innerJoin('user as u', 'uc.contact_id', 'u.id')
+      .select([
+        'u.id',
+        'u.username',
+        'u.linkedin_url',
+        'u.facebook_url',
+        'u.instagram_url',
+        'u.twitter_url',
+        'u.youtube_url',
+        'u.tiktok_url',
+        'u.social_media_data',
+        'u.last_scraped_at',
+      ])
+      .where('uc.user_id', '=', userId)
+      .execute();
+  }
+
   async getUserContacts(userId: number) {
     console.log('Getting contacts for user ID:', userId);
 

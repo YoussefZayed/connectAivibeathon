@@ -139,6 +139,8 @@ export type user = {
     tiktok_url: string | null;
     twitter_url: string | null;
     youtube_url: string | null;
+    social_media_data: unknown | null;
+    last_scraped_at: Timestamp | null;
 };
 export type user_contacts = {
     id: Generated<number>;

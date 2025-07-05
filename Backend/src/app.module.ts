@@ -4,6 +4,7 @@ import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { EventsModule } from './events/events.module';
+import { SocialScraperModule } from './social-scraper/social-scraper.module';
 import { VectorDbModule } from './vector-db/vector-db.module';
 import { KnowledgeBaseModule } from './knowledge-base/knowledge-base.module';
 
@@ -14,6 +15,7 @@ import { KnowledgeBaseModule } from './knowledge-base/knowledge-base.module';
     AuthModule,
     UserModule,
     EventsModule,
+    SocialScraperModule,
     VectorDbModule,
     KnowledgeBaseModule,
   ],
