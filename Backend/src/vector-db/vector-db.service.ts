@@ -4,8 +4,7 @@ import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
 import { Pool } from 'pg';
 import { ConfigService } from '@nestjs/config';
 import { Document } from 'langchain/document';
-import { Kysely } from 'kysely';
-import { DB } from '../generated/types';
+import { DatabaseService } from '../core/db/db.service';
 
 @Injectable()
 export class VectorDbService implements OnModuleInit {
@@ -16,7 +15,7 @@ export class VectorDbService implements OnModuleInit {
 
   constructor(
     private configService: ConfigService,
-    private readonly db: Kysely<DB>
+    private readonly dbService: DatabaseService
   ) {
     this.embeddings = new OpenAIEmbeddings({
       openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
@@ -41,10 +40,10 @@ export class VectorDbService implements OnModuleInit {
           },
           tableName: 'knowledge_vectors',
           columns: {
-            idColumn: 'id',
-            vectorColumn: 'embedding',
-            contentColumn: 'content',
-            metadataColumn: 'metadata',
+            idColumnName: 'id',
+            vectorColumnName: 'embedding',
+            contentColumnName: 'content',
+            metadataColumnName: 'metadata',
           },
         }
       );
@@ -67,7 +66,7 @@ export class VectorDbService implements OnModuleInit {
       }
       
       // Fetch all users from the database
-      const users = await this.db.selectFrom('user').selectAll().execute();
+      const users = await this.dbService.db.selectFrom('user').selectAll().execute();
       
       if (!users.length) {
         this.logger.log('No users found to index');
@@ -114,7 +113,7 @@ export class VectorDbService implements OnModuleInit {
       }
       
       // Fetch all knowledge base entries from the database
-      const entries = await this.db
+      const entries = await this.dbService.db
         .selectFrom('knowledge_base_entry')
         .innerJoin('user', 'user.id', 'knowledge_base_entry.user_id')
         .select([

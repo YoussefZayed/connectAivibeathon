@@ -48,12 +48,14 @@ model user_contacts {
 }
 
 model eventsData {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  event_name String
+  id                Int      @id @default(autoincrement())
+  createdAt         DateTime @default(now())
+  event_name        String
   event_description String
-  event_date DateTime
-  image_url String
+  event_date        DateTime
+  image_url         String
+}
+
 model facebook_profile {
   id              Int       @id @default(autoincrement())
   createdAt       DateTime  @default(now())

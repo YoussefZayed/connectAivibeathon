@@ -9,93 +9,85 @@ export class VectorDbController {
 
   @TsRestHandler(vectorDbContract.indexAllUsers)
   async indexAllUsers() {
-    return tsRestHandler(vectorDbContract.indexAllUsers, {
-      async handler() {
-        try {
-          const result = await this.vectorDbService.indexAllUsers();
-          return {
-            status: 200,
-            body: result,
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: error.message,
-            },
-          };
-        }
-      },
+    return tsRestHandler(vectorDbContract.indexAllUsers, async ({ body }) => {
+      try {
+        const result = await this.vectorDbService.indexAllUsers();
+        return {
+          status: 200,
+          body: result,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: error.message,
+          },
+        };
+      }
     });
   }
 
   @TsRestHandler(vectorDbContract.indexAllKnowledgeBaseEntries)
   async indexAllKnowledgeBaseEntries() {
-    return tsRestHandler(vectorDbContract.indexAllKnowledgeBaseEntries, {
-      async handler() {
-        try {
-          const result = await this.vectorDbService.indexAllKnowledgeBaseEntries();
-          return {
-            status: 200,
-            body: result,
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: error.message,
-            },
-          };
-        }
-      },
+    return tsRestHandler(vectorDbContract.indexAllKnowledgeBaseEntries, async ({ body }) => {
+      try {
+        const result = await this.vectorDbService.indexAllKnowledgeBaseEntries();
+        return {
+          status: 200,
+          body: result,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: error.message,
+          },
+        };
+      }
     });
   }
 
   @TsRestHandler(vectorDbContract.storeKnowledgeBaseEntry)
   async storeKnowledgeBaseEntry() {
-    return tsRestHandler(vectorDbContract.storeKnowledgeBaseEntry, {
-      async handler({ body }) {
-        try {
-          const result = await this.vectorDbService.storeKnowledgeBaseEntry(body);
-          return {
-            status: 201,
-            body: result,
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: error.message,
-            },
-          };
-        }
-      },
+    return tsRestHandler(vectorDbContract.storeKnowledgeBaseEntry, async ({ body }) => {
+      try {
+        const result = await this.vectorDbService.storeKnowledgeBaseEntry(body);
+        return {
+          status: 201,
+          body: result,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: error.message,
+          },
+        };
+      }
     });
   }
 
-  @TsRestHandler(vectorDbContract.queryKnowledge)
-  async queryKnowledge() {
-    return tsRestHandler(vectorDbContract.queryKnowledge, {
-      async handler({ body }) {
-        try {
-          const results = await this.vectorDbService.queryKnowledge(
-            body.query,
-            body.userId,
-            body.limit,
-          );
-          return {
-            status: 200,
-            body: results,
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: error.message,
-            },
-          };
-        }
-      },
+  @TsRestHandler(vectorDbContract.vectorQueryKnowledge)
+  async vectorQueryKnowledge() {
+    return tsRestHandler(vectorDbContract.vectorQueryKnowledge, async ({ body }) => {
+      try {
+        const results = await this.vectorDbService.queryKnowledge(
+          body.query,
+          body.userId,
+          body.limit,
+        );
+        return {
+          status: 200,
+          body: results,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: error.message,
+          },
+        };
+      }
     });
   }
 }

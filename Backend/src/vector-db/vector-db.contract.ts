@@ -65,7 +65,7 @@ export const vectorDbContract = c.router({
     summary: 'Store a knowledge base entry in the vector database',
   },
   
-  queryKnowledge: {
+  vectorQueryKnowledge: {
     method: 'POST',
     path: '/vector-db/query',
     responses: {
