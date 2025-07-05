@@ -72,7 +72,9 @@ export class KnowledgeBaseService {
         topics: data.topics,
       });
 
-      this.logger.log(`Created and indexed knowledge base entry for user ${data.userId}`);
+      this.logger.log(
+        `Created and indexed knowledge base entry for user ${data.userId}`,
+      );
 
       return {
         success: true,
@@ -80,8 +82,12 @@ export class KnowledgeBaseService {
         id: result.id,
       };
     } catch (error) {
-      this.logger.error(`Error creating knowledge base entry: ${error.message}`);
-      throw new Error(`Failed to create knowledge base entry: ${error.message}`);
+      this.logger.error(
+        `Error creating knowledge base entry: ${error.message}`,
+      );
+      throw new Error(
+        `Failed to create knowledge base entry: ${error.message}`,
+      );
     }
   }
 
@@ -98,7 +104,9 @@ export class KnowledgeBaseService {
 
       return entries;
     } catch (error) {
-      this.logger.error(`Error getting knowledge base entries: ${error.message}`);
+      this.logger.error(
+        `Error getting knowledge base entries: ${error.message}`,
+      );
       throw new Error(`Failed to get knowledge base entries: ${error.message}`);
     }
   }

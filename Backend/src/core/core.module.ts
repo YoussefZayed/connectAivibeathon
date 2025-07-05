@@ -4,7 +4,7 @@ import { DbModule } from './db/db.module';
 import { LoggerModule } from './logging/logging.module';
 
 @Module({
-    imports: [ConfigModule, DbModule, LoggerModule],
-    exports: [ConfigModule, DbModule, LoggerModule],
+  imports: [ConfigModule, DbModule, LoggerModule],
+  exports: [ConfigModule, DbModule, LoggerModule],
 })
-export class CoreModule { } 
+export class CoreModule {}

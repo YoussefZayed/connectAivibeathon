@@ -31,9 +31,10 @@ export const knowledgeBaseContract = c.router({
       topics: z.array(z.string()).optional(),
       confidenceScore: z.number().optional(),
     }),
-    summary: 'Create a new knowledge base entry and index it in the vector database',
+    summary:
+      'Create a new knowledge base entry and index it in the vector database',
   },
-  
+
   getKnowledgeBaseEntries: {
     method: 'GET',
     path: '/knowledge-base/user/:userId',
@@ -57,18 +58,18 @@ export const knowledgeBaseContract = c.router({
           confidence_score: z.number().nullable(),
           is_processed: z.boolean(),
           processing_error: z.string().nullable(),
-        })
+        }),
       ),
       400: z.object({
         message: z.string(),
       }),
     },
     pathParams: z.object({
-      userId: z.string().transform(val => parseInt(val, 10)),
+      userId: z.string().transform((val) => parseInt(val, 10)),
     }),
     summary: 'Get all knowledge base entries for a specific user',
   },
-  
+
   getKnowledgeBaseEntry: {
     method: 'GET',
     path: '/knowledge-base/:id',
@@ -100,21 +101,23 @@ export const knowledgeBaseContract = c.router({
       }),
     },
     pathParams: z.object({
-      id: z.string().transform(val => parseInt(val, 10)),
+      id: z.string().transform((val) => parseInt(val, 10)),
     }),
     summary: 'Get a specific knowledge base entry by ID',
   },
-  
+
   queryKnowledge: {
     method: 'POST',
     path: '/knowledge-base/query',
     responses: {
       200: z.object({
-        results: z.array(z.object({
-          text: z.string(),
-          metadata: z.record(z.any()),
-          score: z.number().optional(),
-        })),
+        results: z.array(
+          z.object({
+            text: z.string(),
+            metadata: z.record(z.any()),
+            score: z.number().optional(),
+          }),
+        ),
       }),
       400: z.object({
         message: z.string(),
