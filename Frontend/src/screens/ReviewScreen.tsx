@@ -11,7 +11,7 @@ export default function ReviewScreen({ route, navigation }: Props) {
   const handleConfirm = () => {
     // TODO: Send the userData to your Nest.js backend to save in the database.
     console.log("User data confirmed:", userData);
-    navigation.navigate("Home");
+    navigation.navigate("Main");
   };
 
   return (
