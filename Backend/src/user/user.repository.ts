@@ -143,13 +143,16 @@ export class UserRepository {
     return result;
   }
 
-  async createUserProfile(userId: number, profileData: {
-    fullName: string;
-    industry?: string;
-    hobbies?: string;
-    lookingFor?: string;
-    bio?: string;
-  }) {
+  async createUserProfile(
+    userId: number,
+    profileData: {
+      fullName: string;
+      industry?: string;
+      hobbies?: string;
+      lookingFor?: string;
+      bio?: string;
+    },
+  ) {
     return await this.db
       .insertInto('user_profile')
       .values({
@@ -165,13 +168,16 @@ export class UserRepository {
       .executeTakeFirstOrThrow();
   }
 
-  async updateUserProfile(userId: number, profileData: {
-    fullName: string;
-    industry?: string;
-    hobbies?: string;
-    lookingFor?: string;
-    bio?: string;
-  }) {
+  async updateUserProfile(
+    userId: number,
+    profileData: {
+      fullName: string;
+      industry?: string;
+      hobbies?: string;
+      lookingFor?: string;
+      bio?: string;
+    },
+  ) {
     return await this.db
       .updateTable('user_profile')
       .set({

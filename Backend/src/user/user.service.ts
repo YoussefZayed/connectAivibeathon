@@ -60,15 +60,18 @@ export class UserService {
     return contacts;
   }
 
-  async createOrUpdateProfile(userId: number, profileData: {
-    fullName: string;
-    industry?: string;
-    hobbies?: string;
-    lookingFor?: string;
-    bio?: string;
-  }) {
+  async createOrUpdateProfile(
+    userId: number,
+    profileData: {
+      fullName: string;
+      industry?: string;
+      hobbies?: string;
+      lookingFor?: string;
+      bio?: string;
+    },
+  ) {
     const existingProfile = await this.userRepository.getUserProfile(userId);
-    
+
     if (existingProfile) {
       // Update existing profile
       return this.userRepository.updateUserProfile(userId, profileData);
