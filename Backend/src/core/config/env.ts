@@ -10,6 +10,8 @@ export const envSchema = z.object({
         .default('development'),
     PORT: z.coerce.number().default(3000),
     JWT_SECRET: z.string(),
+    TAVILY_API_KEY: z.string(),
+    OPENAI_KEY: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>; 
