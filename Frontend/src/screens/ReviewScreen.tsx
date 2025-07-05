@@ -62,25 +62,14 @@ export default function ReviewScreen({ route, navigation }: Props) {
       if (result.status === 201) {
         console.log("Profile created successfully:", result.body);
         
-        Alert.alert(
-          "Success!",
-          "Your profile has been saved successfully.",
-          [
-            {
-              text: "Continue",
-              onPress: () => {
-                // Mark onboarding as complete
-                completeOnboarding();
+        // Mark onboarding as complete
+        completeOnboarding();
 
-                // Navigate to the main dashboard
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: "Main" }],
-                });
-              },
-            },
-          ]
-        );
+        // Navigate to the main dashboard immediately
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
+        });
       } else {
         throw new Error(`Unexpected status: ${result.status}`);
       }
