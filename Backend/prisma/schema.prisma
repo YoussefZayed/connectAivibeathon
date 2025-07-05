@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator kysely {
+  provider = "npx prisma-kysely"
+  output   = "src/generated"
+  fileName = "types.ts"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NOTE: All model names should be in lowercase_snake_case (e.g., user, blog_post).
+model user {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  username  String   @unique
+  password  String
+}
+
+model health {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+}

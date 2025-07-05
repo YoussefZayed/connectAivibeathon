@@ -1,0 +1,6 @@
+{
+	"devDependencies": {
+		"prisma-kysely": "^1.8.0",
+		"@prisma/client": "^6.9.0"
+	}
+}
