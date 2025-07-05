@@ -12,6 +12,7 @@ import LoadingScreen from "../screens/LoadingScreen";
 import AccountSetupScreen from "../screens/AccountSetupScreen";
 import ReviewScreen from "../screens/ReviewScreen";
 import AddContactScreen from "../screens/AddContactScreen";
+import ContactsScreen from '../screens/ContactsScreen';
 
 // Define all possible routes and their parameters
 export type RootStackParamList = {
@@ -20,6 +21,7 @@ export type RootStackParamList = {
   Review: { userData: Record<string, any> };
   Main: undefined; // This is your main dashboard
   AddContact: undefined; // Add the new screen here
+  Contacts: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -105,6 +107,7 @@ function AppNavigator() {
             {/* Other screens available in the logged-in stack */}
             <Stack.Screen name="Review" component={ReviewScreen} />
             <Stack.Screen name="AddContact" component={AddContactScreen} />
+            <Stack.Screen name="Contacts" component={ContactsScreen} />
 
             {/* Add Main/AccountSetup here again so they can be navigated to */}
             {!isNewUser && (

@@ -49,6 +49,13 @@ export default function MainScreen({ navigation }: MainScreenProps) {
         <Text className="text-white">Add Contact</Text>
       </Pressable>
 
+      <Pressable
+        onPress={() => navigation.navigate('Contacts')}
+        className="bg-purple-500 p-2 rounded-md mb-4 z-10"
+      >
+        <Text className="text-white">View Contacts</Text>
+      </Pressable>
+
       <Pressable onPress={logout} className="bg-red-500 p-2 rounded-md z-10">
         <Text className="text-white">Logout</Text>
       </Pressable>
