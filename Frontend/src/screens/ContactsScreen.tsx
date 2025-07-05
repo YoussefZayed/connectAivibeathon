@@ -22,12 +22,15 @@ interface Contact {
   contactCreatedAt: Date | string;
 }
 
-const ContactItem = ({ contact }: { contact: Contact }) => {
+const ContactItem = ({ contact, onPress }: { contact: Contact; onPress: () => void }) => {
   // Generate avatar URL using DiceBear API with the username as seed
   const avatarUrl = `https://api.dicebear.com/7.x/avataaars/png?seed=${encodeURIComponent(contact.username)}&size=80`;
   
   return (
-    <View className="flex-row items-center p-4 bg-white rounded-lg mb-3 shadow-sm">
+    <Pressable
+      onPress={onPress}
+      className="flex-row items-center p-4 bg-white rounded-lg mb-3 shadow-sm active:bg-gray-50"
+    >
       <Image
         source={{ uri: avatarUrl }}
         className="w-16 h-16 rounded-full mr-4"
@@ -41,7 +44,8 @@ const ContactItem = ({ contact }: { contact: Contact }) => {
           Added {new Date(contact.contactCreatedAt).toLocaleDateString()}
         </Text>
       </View>
-    </View>
+      <Text className="text-gray-400 text-lg">›</Text>
+    </Pressable>
   );
 };
 
@@ -50,6 +54,11 @@ export default function ContactsScreen({ navigation }: ContactsScreenProps) {
 
   const handleRefresh = () => {
     refetch();
+  };
+
+  const handleContactPress = (contact: Contact) => {
+    console.log('Contact pressed:', contact.username);
+    navigation.navigate('ContactDetails', { contact });
   };
 
   if (isLoading) {
@@ -127,7 +136,12 @@ export default function ContactsScreen({ navigation }: ContactsScreenProps) {
           <FlatList
             data={contacts}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <ContactItem contact={item} />}
+            renderItem={({ item }) => (
+              <ContactItem 
+                contact={item} 
+                onPress={() => handleContactPress(item)}
+              />
+            )}
             showsVerticalScrollIndicator={false}
             onRefresh={handleRefresh}
             refreshing={isLoading}
