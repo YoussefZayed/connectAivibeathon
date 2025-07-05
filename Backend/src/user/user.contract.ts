@@ -1,0 +1,23 @@
+import { initContract } from '@ts-rest/core';
+import { z } from 'zod';
+
+const c = initContract();
+
+export const userContract = c.router({
+    addContact: {
+        method: 'POST',
+        path: '/users/add-contact',
+        body: z.object({
+            username: z.string(),
+        }),
+        responses: {
+            201: z.object({
+                id: z.number(),
+                createdAt: z.date(),
+                user_id: z.number(),
+                contact_id: z.number(),
+            }),
+        },
+        summary: 'Add a user to contacts',
+    },
+}); 
