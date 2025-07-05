@@ -1,9 +1,19 @@
 import React from "react";
-import { View, Text, TextInput, Pressable, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Alert,
+  StatusBar,
+  ActivityIndicator,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useLoginMutation, useRegisterMutation } from "../api";
 import useUserStore from "../store/user-store";
 import { RootStackParamList } from "../navigation";
+import { LinearGradient } from "expo-linear-gradient";
+import { User, Lock } from "lucide-react-native";
 
 type AuthScreenProps = NativeStackScreenProps<RootStackParamList, "Auth">;
 
@@ -22,7 +32,6 @@ export default function AuthScreen({ navigation }: AuthScreenProps) {
 
       if (result.status === 200 && result.body) {
         login(result.body.user, result.body.accessToken);
-        // On normal login, the navigator automatically shows the Main screen.
       } else {
         Alert.alert("Login Failed", JSON.stringify(result.body));
       }
@@ -44,8 +53,6 @@ export default function AuthScreen({ navigation }: AuthScreenProps) {
         });
 
         if (loginResult.status === 200 && loginResult.body) {
-          // Log the user in and set the isNewUser flag to true.
-          // The navigator will handle the redirection.
           login(loginResult.body.user, loginResult.body.accessToken, true);
         } else {
           Alert.alert(
@@ -61,35 +68,87 @@ export default function AuthScreen({ navigation }: AuthScreenProps) {
     }
   };
 
+  const isLoading = loginMutation.isPending || registerMutation.isPending;
+
   return (
-    <View className="flex-1 items-center justify-center bg-gray-100 p-4">
-      <Text className="text-2xl font-bold mb-4">Welcome</Text>
-      <TextInput
-        className="w-full p-2 border border-gray-300 rounded-md mb-2"
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-      <TextInput
-        className="w-full p-2 border border-gray-300 rounded-md mb-4"
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Pressable
-        onPress={handleLogin}
-        className="bg-blue-500 p-3 rounded-md w-full items-center mb-2"
-        disabled={loginMutation.isPending || registerMutation.isPending}>
-        <Text className="text-white font-bold">Login</Text>
-      </Pressable>
-      <Pressable
-        onPress={handleRegister}
-        className="bg-green-500 p-3 rounded-md w-full items-center"
-        disabled={registerMutation.isPending || loginMutation.isPending}>
-        <Text className="text-white font-bold">Register</Text>
-      </Pressable>
-    </View>
+    <LinearGradient colors={["#667eea", "#764ba2"]} className="flex-1">
+      <StatusBar style="light" />
+      <View className="flex-1 justify-center p-8">
+        {/* Header */}
+        <View className="items-center mb-12">
+          <Text className="text-5xl font-bold text-white mb-2">
+            MapleKinnect
+          </Text>
+          <Text className="text-lg text-white/80">
+            Sign in or create an account
+          </Text>
+        </View>
+
+        {/* Form */}
+        <View className="w-full">
+          {/* Username Input */}
+          <View className="mb-4">
+            <Text className="text-white/80 text-sm font-bold mb-2 ml-2">
+              USERNAME
+            </Text>
+            <View className="flex-row items-center bg-white/20 rounded-xl p-4">
+              <User color="rgba(255, 255, 255, 0.6)" size={20} />
+              <TextInput
+                className="flex-1 text-white text-base ml-3"
+                placeholder="Enter your username"
+                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+                editable={!isLoading}
+              />
+            </View>
+          </View>
+
+          {/* Password Input */}
+          <View className="mb-8">
+            <Text className="text-white/80 text-sm font-bold mb-2 ml-2">
+              PASSWORD
+            </Text>
+            <View className="flex-row items-center bg-white/20 rounded-xl p-4">
+              <Lock color="rgba(255, 255, 255, 0.6)" size={20} />
+              <TextInput
+                className="flex-1 text-white text-base ml-3"
+                placeholder="Enter your password"
+                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                editable={!isLoading}
+              />
+            </View>
+          </View>
+
+          {/* Login Button */}
+          <Pressable
+            onPress={handleLogin}
+            className="bg-white p-4 rounded-xl w-full items-center justify-center mb-4 h-16"
+            disabled={isLoading}>
+            {loginMutation.isPending ? (
+              <ActivityIndicator size="small" color="#667eea" />
+            ) : (
+              <Text className="text-[#667eea] font-bold text-lg">Login</Text>
+            )}
+          </Pressable>
+
+          {/* Register Button */}
+          <Pressable
+            onPress={handleRegister}
+            className="border-2 border-white/50 p-4 rounded-xl w-full items-center justify-center h-16"
+            disabled={isLoading}>
+            {registerMutation.isPending ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Text className="text-white font-bold text-lg">Register</Text>
+            )}
+          </Pressable>
+        </View>
+      </View>
+    </LinearGradient>
   );
 }

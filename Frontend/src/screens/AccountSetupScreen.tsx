@@ -32,21 +32,25 @@ export default function AccountSetupScreen({ navigation }: Props) {
   });
 
   const handleInputChange = (field: keyof UserData, value: string) => {
-    setUserData(prev => ({
+    setUserData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleNext = () => {
     // Validate required fields
     const requiredFields: (keyof UserData)[] = ["Full Name"];
-    const missingFields = requiredFields.filter(field => !userData[field].trim());
-    
+    const missingFields = requiredFields.filter(
+      (field) => !userData[field].trim()
+    );
+
     if (missingFields.length > 0) {
       Alert.alert(
         "Missing Information",
-        `Please fill in the following required fields: ${missingFields.join(", ")}`
+        `Please fill in the following required fields: ${missingFields.join(
+          ", "
+        )}`
       );
       return;
     }
@@ -95,11 +99,46 @@ export default function AccountSetupScreen({ navigation }: Props) {
         </View>
 
         <View className="mb-6">
-          {renderInputField("Full Name", "Full Name", "Enter your full name", "default", false, true)}
-          {renderInputField("Industry", "Industry", "e.g., Software Development, Marketing, Healthcare", "default", false, false)}
-          {renderInputField("Hobbies", "Hobbies & Interests", "e.g., Playing tennis, hiking, reading", "default", true, false)}
-          {renderInputField("Looking For", "What are you looking for?", "e.g., Professional networking, sports partners, friends", "default", true, false)}
-          {renderInputField("Bio", "Bio", "Tell us a bit about yourself...", "default", true, false)}
+          {renderInputField(
+            "Full Name",
+            "Full Name",
+            "Enter your full name",
+            "default",
+            false,
+            true
+          )}
+          {renderInputField(
+            "Industry",
+            "Industry",
+            "e.g., Software Development, Marketing, Healthcare",
+            "default",
+            false,
+            false
+          )}
+          {renderInputField(
+            "Hobbies",
+            "Hobbies & Interests",
+            "e.g., Playing tennis, hiking, reading",
+            "default",
+            true,
+            false
+          )}
+          {renderInputField(
+            "Looking For",
+            "What are you looking for?",
+            "e.g., Professional networking, sports partners, friends",
+            "default",
+            true,
+            false
+          )}
+          {renderInputField(
+            "Bio",
+            "Bio",
+            "Tell us a bit about yourself...",
+            "default",
+            true,
+            false
+          )}
         </View>
 
         <Pressable
@@ -111,3 +150,23 @@ export default function AccountSetupScreen({ navigation }: Props) {
     </SafeAreaView>
   );
 }
+
+// async function stopRecording() {
+//   // ... (existing stop recording logic)
+//   const uri = recording.getURI();
+//   console.log("Recording stopped. Audio file URI:", uri);
+
+//   // TODO: Send audio to backend, get structured data back.
+//   const mockUserData = {
+//     "Full Name": "Jane Doe",
+//     Hobbies: "Playing tennis, hiking, and reading.",
+//     Industry: "Software Development",
+//     "Looking For": "Meeting new people for sports and professional networking.",
+//   };
+
+//   // Navigate to the Socials screen next
+//   navigation.navigate("Socials", { userData: mockUserData });
+
+//   setIsProcessing(false);
+//   setRecording(null);
+// }

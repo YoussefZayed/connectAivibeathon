@@ -1,17 +1,17 @@
-import { client } from '../lib/ts-rest';
-import useUserStore from '../store/user-store';
-import { useQuery, UseQueryOptions, useMutation } from '@tanstack/react-query';
+import { client } from "../lib/ts-rest";
+import useUserStore from "../store/user-store";
+import { useQuery, UseQueryOptions, useMutation } from "@tanstack/react-query";
 
 export const useHealthCheckQuery = () => {
-    return client.healthCheck.useQuery(['healthCheck']);
+  return client.healthCheck.useQuery(["healthCheck"]);
 };
 
 export const useLoginMutation = () => {
-    return client.login.useMutation();
+  return client.login.useMutation();
 };
 
 export const useRegisterMutation = () => {
-    return client.register.useMutation();
+  return client.register.useMutation();
 };
 
 type MeQueryResult = Awaited<ReturnType<typeof client.me.query>>;
@@ -24,18 +24,18 @@ export const useMeQuery = (
       MeQueryResult,
       [string, string | null]
     >,
-    'queryKey' | 'queryFn'
-  >,
+    "queryKey" | "queryFn"
+  >
 ) => {
-  const accessToken = useUserStore(s => s.accessToken);
+  const accessToken = useUserStore((s) => s.accessToken);
 
   return useQuery({
-    queryKey: ['me', accessToken],
+    queryKey: ["me", accessToken],
     queryFn: async () => {
       if (!accessToken) {
         // This should not happen because the query is disabled if there is no token
         // but as a safeguard:
-        throw new Error('No access token');
+        throw new Error("No access token");
       }
 
       const result = await client.me.query({
@@ -61,13 +61,13 @@ export const useAddContactMutation = () => {
 };
 
 export const useGetContactsQuery = () => {
-  const accessToken = useUserStore(s => s.accessToken);
+  const accessToken = useUserStore((s) => s.accessToken);
 
   return useQuery({
-    queryKey: ['contacts', accessToken],
+    queryKey: ["contacts", accessToken],
     queryFn: async () => {
       if (!accessToken) {
-        throw new Error('No access token');
+        throw new Error("No access token");
       }
 
       const result = await client.getContacts.query({
@@ -86,9 +86,38 @@ export const useGetContactsQuery = () => {
   });
 };
 
+export const useGetEventsQuery = () => {
+  const accessToken = useUserStore((s) => s.accessToken);
+
+  return useQuery({
+    queryKey: ["events", accessToken],
+    queryFn: async () => {
+      if (!accessToken) {
+        throw new Error("No access token");
+      }
+
+      // This calls the GET /events endpoint defined in your contract
+      const result = await client.getEvents.query({
+        extraHeaders: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (result.status === 200) {
+        return result;
+      }
+
+      // Let react-query handle the error state
+      throw result;
+    },
+    // This query will not run until the access token is available
+    enabled: !!accessToken,
+  });
+};
+
 export const useCreateProfileMutation = () => {
-  const accessToken = useUserStore(s => s.accessToken);
-  
+  const accessToken = useUserStore((s) => s.accessToken);
+
   return useMutation({
     mutationFn: async (variables: {
       body: {
@@ -97,13 +126,15 @@ export const useCreateProfileMutation = () => {
         hobbies?: string;
         lookingFor?: string;
         bio?: string;
+        socials?: Record<string, string | undefined>; // Add socials to the type
       };
     }) => {
       if (!accessToken) {
-        throw new Error('No access token');
+        throw new Error("No access token");
       }
 
-      const result = await client.createProfile.mutate(variables, {
+      const result = await client.createProfile.mutation({
+        body: variables.body, // Pass the body from the variables
         extraHeaders: {
           authorization: `Bearer ${accessToken}`,
         },
@@ -119,13 +150,13 @@ export const useCreateProfileMutation = () => {
 };
 
 export const useGetProfileQuery = () => {
-  const accessToken = useUserStore(s => s.accessToken);
+  const accessToken = useUserStore((s) => s.accessToken);
 
   return useQuery({
-    queryKey: ['profile', accessToken],
+    queryKey: ["profile", accessToken],
     queryFn: async () => {
       if (!accessToken) {
-        throw new Error('No access token');
+        throw new Error("No access token");
       }
 
       const result = await client.getProfile.query({

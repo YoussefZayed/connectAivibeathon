@@ -3,7 +3,7 @@ import {
   View,
   Text,
   Pressable,
-  SafeAreaView,
+  ScrollView,
   StatusBar,
   Alert,
   ActivityIndicator,
@@ -11,139 +11,112 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import useUserStore from "../store/user-store";
-import { initClient } from "@ts-rest/core";
-import { contract } from "@contract";
-import { getBaseUrl } from "../lib/ts-rest";
+import { useCreateProfileMutation } from "../api";
+import { LinearGradient } from "expo-linear-gradient";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Review">;
 
 export default function ReviewScreen({ route, navigation }: Props) {
   const { userData } = route.params;
-  const { completeOnboarding, accessToken } = useUserStore();
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { completeOnboarding } = useUserStore();
+  const createProfileMutation = useCreateProfileMutation();
 
   const handleConfirm = async () => {
-    if (!accessToken) {
-      Alert.alert("Error", "You must be logged in to save your profile.");
-      return;
-    }
-
-    setIsLoading(true);
-    
     try {
-      console.log("Starting profile creation with data:", userData);
-      
-      // Transform userData to match backend contract
       const profileData = {
         fullName: userData["Full Name"],
-        industry: userData.Industry || undefined,
-        hobbies: userData.Hobbies || undefined,
-        lookingFor: userData["Looking For"] || undefined,
-        bio: userData.Bio || undefined,
+        industry: userData.Industry,
+        hobbies: userData.Hobbies,
+        lookingFor: userData["Looking For"],
+        bio: userData.Bio,
+        socials: {
+          LinkedIn: userData.LinkedIn,
+          Facebook: userData.Facebook,
+          Instagram: userData.Instagram,
+          Twitter: userData.Twitter,
+        },
       };
 
-      console.log("Transformed profile data:", profileData);
-      console.log("Using access token:", accessToken);
-
-      // Create a direct client for this request
-      const directClient = initClient(contract, {
-        baseUrl: getBaseUrl(),
-        baseHeaders: {
-          authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const result = await directClient.createProfile({
+      // Wrap the profileData in a 'body' object to match the expected type
+      const result = await createProfileMutation.mutateAsync({
         body: profileData,
       });
 
-      console.log("API response:", result);
-
       if (result.status === 201) {
-        console.log("Profile created successfully:", result.body);
-        
-        // Mark onboarding as complete
         completeOnboarding();
-
-        // Navigate to the main dashboard immediately
         navigation.reset({
           index: 0,
           routes: [{ name: "Main" }],
         });
       } else {
-        throw new Error(`Unexpected status: ${result.status}`);
+        // The mutation's onError will be triggered by react-query
+        throw new Error(
+          "Profile creation failed with status: " + result.status
+        );
       }
     } catch (error: any) {
-      console.error("Error creating profile:", error);
-      
-      let errorMessage = "Failed to save your profile. Please try again.";
-      
-      if (error?.body?.message) {
-        errorMessage = error.body.message;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      } else if (error?.status === 401) {
-        errorMessage = "Authentication failed. Please log in again.";
-      } else if (error?.status === 400) {
-        errorMessage = "Invalid data provided. Please check your information.";
-      }
-      
-      Alert.alert(
-        "Error",
-        errorMessage,
-        [
-          {
-            text: "OK",
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
-    } finally {
-      setIsLoading(false);
+      const errorMessage =
+        error?.body?.message ||
+        "Failed to save your profile. Please try again.";
+      Alert.alert("Error", errorMessage);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
-      <StatusBar barStyle="dark-content" />
-      <View className="flex-1 p-6">
-        <Text className="text-3xl font-bold text-gray-800 mb-6">
-          Review Your Information
-        </Text>
+    <LinearGradient colors={["#667eea", "#764ba2"]} className="flex-1">
+      <StatusBar barStyle="light-content" />
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          padding: 24,
+        }}>
+        <View className="mb-8">
+          <Text className="text-3xl font-bold text-white mb-2 text-center">
+            Final Review
+          </Text>
+          <Text className="text-lg text-white/80 text-center">
+            Confirm your details before we create your profile.
+          </Text>
+        </View>
 
-        <View className="bg-white p-4 rounded-lg shadow-md mb-6">
-          {Object.entries(userData).map(([key, value]) => (
-            <View key={key} className="mb-4">
-              <Text className="text-sm font-semibold text-gray-500">{key}</Text>
-              <Text className="text-lg text-gray-800">{String(value)}</Text>
-            </View>
-          ))}
+        <View className="bg-white/10 p-4 rounded-2xl mb-8">
+          {Object.entries(userData).map(([key, value]) => {
+            if (!value) return null;
+            return (
+              <View
+                key={key}
+                className="mb-4 border-b border-white/20 pb-4 last:mb-0 last:border-b-0">
+                <Text className="text-sm font-bold text-white/70 uppercase">
+                  {key}
+                </Text>
+                <Text className="text-lg text-white mt-1">{String(value)}</Text>
+              </View>
+            );
+          })}
         </View>
 
         <Pressable
           onPress={handleConfirm}
-          disabled={isLoading}
-          className={`p-4 rounded-lg items-center mb-4 ${
-            isLoading ? 'bg-gray-400' : 'bg-green-500'
+          disabled={createProfileMutation.isPending}
+          className={`p-4 rounded-xl items-center mb-4 h-16 justify-center ${
+            createProfileMutation.isPending ? "bg-white/50" : "bg-white"
           }`}>
-          <View className="flex-row items-center justify-center">
-            {isLoading && (
-              <ActivityIndicator size="small" color="white" className="mr-2" />
-            )}
-            <Text className="text-white font-bold text-lg">
-              {isLoading ? "Saving..." : "Confirm & Continue"}
+          {createProfileMutation.isPending ? (
+            <ActivityIndicator size="small" color="#667eea" />
+          ) : (
+            <Text className="text-[#667eea] font-bold text-lg">
+              Confirm & Finish Setup
             </Text>
-          </View>
+          )}
         </Pressable>
         <Pressable
           onPress={() => navigation.goBack()}
-          disabled={isLoading}
-          className="bg-gray-300 p-4 rounded-lg items-center">
-          <Text className="text-gray-800 font-bold text-lg">
-            Go Back & Redo
-          </Text>
+          disabled={createProfileMutation.isPending}
+          className="border-2 border-white/50 p-4 rounded-xl w-full items-center justify-center h-16">
+          <Text className="text-white font-bold text-lg">Go Back & Edit</Text>
         </Pressable>
-      </View>
-    </SafeAreaView>
+      </ScrollView>
+    </LinearGradient>
   );
 }
