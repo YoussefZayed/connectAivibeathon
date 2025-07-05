@@ -4,10 +4,18 @@ import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { EventsModule } from './events/events.module';
+import { SocialScraperModule } from './social-scraper/social-scraper.module';
 
 @Module({
-  imports: [CoreModule, HealthModule, AuthModule, UserModule, EventsModule],
+  imports: [
+    CoreModule,
+    HealthModule,
+    AuthModule,
+    UserModule,
+    EventsModule,
+    SocialScraperModule,
+  ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

@@ -21,6 +21,14 @@ export type user = {
     createdAt: Generated<Timestamp>;
     username: string;
     password: string;
+    linkedin_url: string | null;
+    facebook_url: string | null;
+    instagram_url: string | null;
+    twitter_url: string | null;
+    youtube_url: string | null;
+    tiktok_url: string | null;
+    social_media_data: unknown | null;
+    last_scraped_at: Timestamp | null;
 };
 export type user_contacts = {
     id: Generated<number>;
