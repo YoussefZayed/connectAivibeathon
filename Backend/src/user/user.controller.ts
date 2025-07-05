@@ -37,4 +37,34 @@ export class UserController {
             };
         });
     }
+
+    @TsRestHandler(userContract.createProfile)
+    @UseGuards(JwtAuthGuard)
+    async createProfile(@Request() req: { user: user }) {
+        return tsRestHandler(userContract.createProfile, async ({ body }) => {
+            const profile = await this.userService.createOrUpdateProfile(req.user.id, {
+                fullName: body.fullName,
+                industry: body.industry,
+                hobbies: body.hobbies,
+                lookingFor: body.lookingFor,
+                bio: body.bio,
+            });
+            return {
+                status: 201 as const,
+                body: profile,
+            };
+        });
+    }
+
+    @TsRestHandler(userContract.getProfile)
+    @UseGuards(JwtAuthGuard)
+    async getProfile(@Request() req: { user: user }) {
+        return tsRestHandler(userContract.getProfile, async () => {
+            const profile = await this.userService.getUserProfile(req.user.id);
+            return {
+                status: 200 as const,
+                body: profile,
+            };
+        });
+    }
 } 

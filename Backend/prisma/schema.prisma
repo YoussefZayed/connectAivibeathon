@@ -24,6 +24,7 @@ model user {
   tiktok_url           String?
   twitter_url          String?
   youtube_url          String?
+  profile              user_profile?
   facebook_profile     facebook_profile?
   instagram_profile    instagram_profile?
   knowledge_base_entry knowledge_base_entry[]
@@ -32,6 +33,19 @@ model user {
   tiktok_profile       tiktok_profile?
   twitter_profile      twitter_profile?
   youtube_profile      youtube_profile?
+}
+
+model user_profile {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user_id   Int      @unique
+  full_name String
+  industry  String?
+  hobbies   String?
+  looking_for String?
+  bio       String?
+  user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model health {

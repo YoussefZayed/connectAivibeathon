@@ -146,6 +146,17 @@ export type user_contacts = {
     user_id: number;
     contact_id: number;
 };
+export type user_profile = {
+    id: Generated<number>;
+    createdAt: Generated<Timestamp>;
+    updatedAt: Timestamp;
+    user_id: number;
+    full_name: string;
+    industry: string | null;
+    hobbies: string | null;
+    looking_for: string | null;
+    bio: string | null;
+};
 export type youtube_profile = {
     id: Generated<number>;
     createdAt: Generated<Timestamp>;
@@ -168,5 +179,6 @@ export type DB = {
     twitter_profile: twitter_profile;
     user: user;
     user_contacts: user_contacts;
+    user_profile: user_profile;
     youtube_profile: youtube_profile;
 };

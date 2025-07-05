@@ -6,29 +6,60 @@ import {
   SafeAreaView,
   StatusBar,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import useUserStore from "../store/user-store";
+import { useCreateProfileMutation } from "../api";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Review">;
 
 export default function ReviewScreen({ route, navigation }: Props) {
   const { userData } = route.params;
   const { completeOnboarding } = useUserStore();
+  const createProfileMutation = useCreateProfileMutation();
 
-  const handleConfirm = () => {
-    // TODO: Send userData to backend to save the profile.
-    console.log("User data confirmed:", userData);
+  const handleConfirm = async () => {
+    try {
+      // Transform userData to match backend contract
+      const profileData = {
+        fullName: userData["Full Name"],
+        industry: userData.Industry || undefined,
+        hobbies: userData.Hobbies || undefined,
+        lookingFor: userData["Looking For"] || undefined,
+        bio: userData.Bio || undefined,
+      };
 
-    // Mark onboarding as complete. This will make the navigator default to 'Main' on next launch.
-    completeOnboarding();
+      const result = await createProfileMutation.mutateAsync({
+        body: profileData,
+      });
 
-    // Navigate to the main dashboard.
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Main" }],
-    });
+      if (result.status === 201) {
+        console.log("Profile created successfully:", result.body);
+        
+        // Mark onboarding as complete
+        completeOnboarding();
+
+        // Navigate to the main dashboard
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
+        });
+      }
+    } catch (error: any) {
+      console.error("Error creating profile:", error);
+      Alert.alert(
+        "Error",
+        "Failed to save your profile. Please try again.",
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.goBack(),
+          },
+        ]
+      );
+    }
   };
 
   return (
@@ -50,13 +81,22 @@ export default function ReviewScreen({ route, navigation }: Props) {
 
         <Pressable
           onPress={handleConfirm}
-          className="bg-green-500 p-4 rounded-lg items-center mb-4">
-          <Text className="text-white font-bold text-lg">
-            Confirm & Continue
-          </Text>
+          disabled={createProfileMutation.isPending}
+          className={`p-4 rounded-lg items-center mb-4 ${
+            createProfileMutation.isPending ? 'bg-gray-400' : 'bg-green-500'
+          }`}>
+          <View className="flex-row items-center justify-center">
+            {createProfileMutation.isPending && (
+              <ActivityIndicator size="small" color="white" className="mr-2" />
+            )}
+            <Text className="text-white font-bold text-lg">
+              {createProfileMutation.isPending ? "Saving..." : "Confirm & Continue"}
+            </Text>
+          </View>
         </Pressable>
         <Pressable
           onPress={() => navigation.goBack()}
+          disabled={createProfileMutation.isPending}
           className="bg-gray-300 p-4 rounded-lg items-center">
           <Text className="text-gray-800 font-bold text-lg">
             Go Back & Redo

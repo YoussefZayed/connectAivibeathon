@@ -85,3 +85,33 @@ export const useGetContactsQuery = () => {
     enabled: !!accessToken,
   });
 };
+
+export const useCreateProfileMutation = () => {
+  return client.createProfile.useMutation();
+};
+
+export const useGetProfileQuery = () => {
+  const accessToken = useUserStore(s => s.accessToken);
+
+  return useQuery({
+    queryKey: ['profile', accessToken],
+    queryFn: async () => {
+      if (!accessToken) {
+        throw new Error('No access token');
+      }
+
+      const result = await client.getProfile.query({
+        extraHeaders: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (result.status === 200) {
+        return result;
+      }
+
+      throw result;
+    },
+    enabled: !!accessToken,
+  });
+};

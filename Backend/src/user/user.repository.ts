@@ -86,4 +86,55 @@ export class UserRepository {
         console.log('Query result:', result);
         return result;
     }
+
+    async createUserProfile(userId: number, profileData: {
+        fullName: string;
+        industry?: string;
+        hobbies?: string;
+        lookingFor?: string;
+        bio?: string;
+    }) {
+        return await this.db
+            .insertInto('user_profile')
+            .values({
+                user_id: userId,
+                full_name: profileData.fullName,
+                industry: profileData.industry || null,
+                hobbies: profileData.hobbies || null,
+                looking_for: profileData.lookingFor || null,
+                bio: profileData.bio || null,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    }
+
+    async updateUserProfile(userId: number, profileData: {
+        fullName: string;
+        industry?: string;
+        hobbies?: string;
+        lookingFor?: string;
+        bio?: string;
+    }) {
+        return await this.db
+            .updateTable('user_profile')
+            .set({
+                full_name: profileData.fullName,
+                industry: profileData.industry || null,
+                hobbies: profileData.hobbies || null,
+                looking_for: profileData.lookingFor || null,
+                bio: profileData.bio || null,
+                updatedAt: new Date(),
+            })
+            .where('user_id', '=', userId)
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    }
+
+    async getUserProfile(userId: number) {
+        return await this.db
+            .selectFrom('user_profile')
+            .selectAll()
+            .where('user_id', '=', userId)
+            .executeTakeFirst();
+    }
 } 
