@@ -41,4 +41,11 @@ export class UserService {
         // Return the contact relationship from the requesting user's perspective
         return result.contact1;
     }
+
+    async getUserContacts(userId: number) {
+        console.log('UserService: Getting contacts for user ID:', userId);
+        const contacts = await this.userRepository.getUserContacts(userId);
+        console.log('UserService: Retrieved contacts:', contacts);
+        return contacts;
+    }
 } 

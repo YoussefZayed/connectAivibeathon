@@ -26,4 +26,17 @@ export const userContract = c.router({
         },
         summary: 'Add a user to contacts',
     },
+    getContacts: {
+        method: 'GET',
+        path: '/users/contacts',
+        responses: {
+            200: z.array(z.object({
+                id: z.number(),
+                username: z.string(),
+                createdAt: z.date(),
+                contactCreatedAt: z.date(),
+            })),
+        },
+        summary: 'Get all user contacts',
+    },
 }); 

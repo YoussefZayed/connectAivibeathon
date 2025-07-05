@@ -59,3 +59,29 @@ export const useMeQuery = (
 export const useAddContactMutation = () => {
   return client.addContact.useMutation();
 };
+
+export const useGetContactsQuery = () => {
+  const accessToken = useUserStore(s => s.accessToken);
+
+  return useQuery({
+    queryKey: ['contacts', accessToken],
+    queryFn: async () => {
+      if (!accessToken) {
+        throw new Error('No access token');
+      }
+
+      const result = await client.getContacts.query({
+        extraHeaders: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (result.status === 200) {
+        return result;
+      }
+
+      throw result;
+    },
+    enabled: !!accessToken,
+  });
+};
