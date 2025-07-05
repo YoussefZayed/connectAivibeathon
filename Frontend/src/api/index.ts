@@ -97,8 +97,9 @@ export const useGetEventsQuery = () => {
       }
 
       // This calls the GET /events endpoint defined in your contract
-      const result = await client.events.getEvents.query({
-        headers: {
+      const result = await client.getEvents.query({
+        extraHeaders: {
+          // Corrected from 'headers' to 'extraHeaders'
           authorization: `Bearer ${accessToken}`,
         },
       });
