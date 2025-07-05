@@ -71,4 +71,19 @@ export class UserRepository {
             return { contact1, contact2 };
         });
     }
+
+    async getUserContacts(userId: number) {
+        console.log('Getting contacts for user ID:', userId);
+        
+        const result = await this.db
+            .selectFrom('user_contacts')
+            .innerJoin('user', 'user.id', 'user_contacts.contact_id')
+            .select(['user.id', 'user.username', 'user.createdAt', 'user_contacts.createdAt as contactCreatedAt'])
+            .where('user_contacts.user_id', '=', userId)
+            .orderBy('user_contacts.createdAt', 'desc')
+            .execute();
+            
+        console.log('Query result:', result);
+        return result;
+    }
 } 
