@@ -5,7 +5,7 @@ import {
   Pressable,
   SafeAreaView,
   StatusBar,
-  Alert,
+  ScrollView,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
@@ -15,16 +15,17 @@ type Props = NativeStackScreenProps<RootStackParamList, "Review">;
 
 export default function ReviewScreen({ route, navigation }: Props) {
   const { userData } = route.params;
+  console.log("Received userData in ReviewScreen:", userData);
   const { completeOnboarding } = useUserStore();
 
-  const handleConfirm = () => {
-    // TODO: Send userData to backend to save the profile.
-    console.log("User data confirmed:", userData);
+  const handleFinishSetup = () => {
+    // TODO: Send the final `userData` object to your backend here.
+    console.log("Final user data to be saved:", userData);
 
-    // Mark onboarding as complete. This will make the navigator default to 'Main' on next launch.
+    // Mark onboarding as complete
     completeOnboarding();
 
-    // Navigate to the main dashboard.
+    // Reset navigation to the main dashboard
     navigation.reset({
       index: 0,
       routes: [{ name: "Main" }],
@@ -34,35 +35,40 @@ export default function ReviewScreen({ route, navigation }: Props) {
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <StatusBar barStyle="dark-content" />
-      <View className="flex-1 p-6">
-        <Text className="text-3xl font-bold text-gray-800 mb-6">
-          Review Your Information
-        </Text>
+      <ScrollView>
+        <View className="p-6">
+          <Text className="text-3xl font-bold text-gray-800 mb-6">
+            Final Review
+          </Text>
 
-        <View className="bg-white p-4 rounded-lg shadow-md mb-6">
-          {Object.entries(userData).map(([key, value]) => (
-            <View key={key} className="mb-4">
-              <Text className="text-sm font-semibold text-gray-500">{key}</Text>
-              <Text className="text-lg text-gray-800">{String(value)}</Text>
-            </View>
-          ))}
+          <View className="bg-white p-4 rounded-lg shadow-md mb-6">
+            {Object.entries(userData).map(([key, value]) => {
+              if (!value) return null; // Don't display empty social fields
+              return (
+                <View key={key} className="mb-4">
+                  <Text className="text-sm font-semibold text-gray-500">
+                    {key}
+                  </Text>
+                  <Text className="text-lg text-gray-800">{String(value)}</Text>
+                </View>
+              );
+            })}
+          </View>
+
+          <Pressable
+            onPress={handleFinishSetup}
+            className="bg-green-500 p-4 rounded-lg items-center mb-4">
+            <Text className="text-white font-bold text-lg">
+              Confirm & Finish Setup
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            className="bg-gray-300 p-4 rounded-lg items-center">
+            <Text className="text-gray-800 font-bold text-lg">Go Back</Text>
+          </Pressable>
         </View>
-
-        <Pressable
-          onPress={handleConfirm}
-          className="bg-green-500 p-4 rounded-lg items-center mb-4">
-          <Text className="text-white font-bold text-lg">
-            Confirm & Continue
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          className="bg-gray-300 p-4 rounded-lg items-center">
-          <Text className="text-gray-800 font-bold text-lg">
-            Go Back & Redo
-          </Text>
-        </Pressable>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

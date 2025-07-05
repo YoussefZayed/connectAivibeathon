@@ -44,8 +44,7 @@ export default function AuthScreen({ navigation }: AuthScreenProps) {
         });
 
         if (loginResult.status === 200 && loginResult.body) {
-          // Log the user in and set the isNewUser flag to true.
-          // The navigator will handle the redirection.
+          // Log the user in and set the isNewUser flag to true
           login(loginResult.body.user, loginResult.body.accessToken, true);
         } else {
           Alert.alert(

@@ -17,11 +17,8 @@ export default function AccountSetupScreen({ navigation }: Props) {
 
   const handleStart = () => {
     setIsProcessing(true);
-    // TODO: Implement voice recognition logic here.
-    // This will capture the user's freeform answer to "Tell me about yourself".
-    // The captured text will then be processed by OpenAI to extract structured data.
 
-    // For now, we'll simulate the process and navigate to the review screen with mock data.
+    // Simulate processing and navigate to the Socials screen
     setTimeout(() => {
       const mockUserData = {
         "Full Name": "Jane Doe",
@@ -30,8 +27,9 @@ export default function AccountSetupScreen({ navigation }: Props) {
         "Looking For":
           "Meeting new people for sports and professional networking.",
       };
+
       setIsProcessing(false);
-      navigation.navigate("Review", { userData: mockUserData });
+      navigation.navigate("Socials", { userData: mockUserData }); // Navigate to SocialsScreen
     }, 2500);
   };
 
@@ -64,3 +62,23 @@ export default function AccountSetupScreen({ navigation }: Props) {
     </SafeAreaView>
   );
 }
+
+// async function stopRecording() {
+//   // ... (existing stop recording logic)
+//   const uri = recording.getURI();
+//   console.log("Recording stopped. Audio file URI:", uri);
+
+//   // TODO: Send audio to backend, get structured data back.
+//   const mockUserData = {
+//     "Full Name": "Jane Doe",
+//     Hobbies: "Playing tennis, hiking, and reading.",
+//     Industry: "Software Development",
+//     "Looking For": "Meeting new people for sports and professional networking.",
+//   };
+
+//   // Navigate to the Socials screen next
+//   navigation.navigate("Socials", { userData: mockUserData });
+
+//   setIsProcessing(false);
+//   setRecording(null);
+// }

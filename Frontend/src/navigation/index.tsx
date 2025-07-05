@@ -12,21 +12,22 @@ import LoadingScreen from "../screens/LoadingScreen";
 import AccountSetupScreen from "../screens/AccountSetupScreen";
 import ReviewScreen from "../screens/ReviewScreen";
 import AddContactScreen from "../screens/AddContactScreen";
+import SocialsScreen from "../screens/SocialsScreen";
 
-// Define all possible routes and their parameters
 export type RootStackParamList = {
   Auth: undefined;
   AccountSetup: undefined;
+  Socials: { userData: Record<string, any> };
   Review: { userData: Record<string, any> };
-  Main: undefined; // This is your main dashboard
-  AddContact: undefined; // Add the new screen here
+  Main: undefined;
+  AddContact: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const AUTH_TOKEN_KEY = "auth-token";
 
 function AppNavigator() {
-  const { user, accessToken, logout, login, setAccessToken, isNewUser } =
+  const { user, isNewUser, accessToken, logout, login, setAccessToken } =
     useUserStore();
   const [isHydrated, setIsHydrated] = React.useState(false);
 
@@ -50,6 +51,7 @@ function AppNavigator() {
   // Persist token to storage on change
   React.useEffect(() => {
     const persistToken = async () => {
+      if (!isHydrated) return;
       try {
         if (accessToken) {
           await AsyncStorage.setItem(AUTH_TOKEN_KEY, accessToken);
@@ -60,30 +62,31 @@ function AppNavigator() {
         console.error("Failed to persist token", e);
       }
     };
-    // Only persist after the store has been rehydrated
-    if (isHydrated) {
-      persistToken();
-    }
+    persistToken();
   }, [accessToken, isHydrated]);
 
-  // Fetch user if we have a token but no user object
   const { isLoading, isError, data, isSuccess } = useMeQuery({
-    // Only run this query if there's a token and the store has been rehydrated
     enabled: !!accessToken && isHydrated,
   });
 
   React.useEffect(() => {
-    if (isHydrated) {
-      if (isError) {
-        logout(); // Token is invalid, clear the session
-      }
-      if (isSuccess && data?.body) {
-        login(data.body, accessToken!); // Update the user object
-      }
+    if (isHydrated && isSuccess && data?.body && !isNewUser) {
+      login(data.body, accessToken!);
+    } else if (isError) {
+      logout();
     }
-  }, [isError, isSuccess, data, logout, login, accessToken, isHydrated]);
+  }, [
+    isHydrated,
+    isSuccess,
+    isError,
+    data,
+    accessToken,
+    isNewUser,
+    login,
+    logout,
+  ]);
 
-  if (!isHydrated || (isLoading && !!accessToken)) {
+  if (!isHydrated || (isLoading && !!accessToken && !user)) {
     return <LoadingScreen />;
   }
 
@@ -91,31 +94,25 @@ function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Group>
-            {/* Conditionally set the first screen */}
-
-            {isNewUser ? (
+          isNewUser ? (
+            // ONBOARDING STACK
+            <Stack.Group>
               <Stack.Screen
                 name="AccountSetup"
                 component={AccountSetupScreen}
               />
-            ) : (
+              <Stack.Screen name="Socials" component={SocialsScreen} />
+              <Stack.Screen name="Review" component={ReviewScreen} />
+            </Stack.Group>
+          ) : (
+            // MAIN APP STACK
+            <Stack.Group>
               <Stack.Screen name="Main" component={MainScreen} />
-            )}
-            {/* Other screens available in the logged-in stack */}
-            <Stack.Screen name="Review" component={ReviewScreen} />
-            <Stack.Screen name="AddContact" component={AddContactScreen} />
-
-            {/* Add Main/AccountSetup here again so they can be navigated to */}
-            {!isNewUser && (
-              <Stack.Screen
-                name="AccountSetup"
-                component={AccountSetupScreen}
-              />
-            )}
-            {isNewUser && <Stack.Screen name="Main" component={MainScreen} />}
-          </Stack.Group>
+              <Stack.Screen name="AddContact" component={AddContactScreen} />
+            </Stack.Group>
+          )
         ) : (
+          // AUTH STACK
           <Stack.Screen name="Auth" component={AuthScreen} />
         )}
       </Stack.Navigator>
