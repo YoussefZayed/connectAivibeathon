@@ -9,6 +9,7 @@ import { useMeQuery } from '../api';
 import AuthScreen from '../screens/AuthScreen';
 import MainScreen from '../screens/MainScreen';
 import LoadingScreen from '../screens/LoadingScreen';
+import AddContactScreen from '../screens/AddContactScreen';
 
 const Stack = createNativeStackNavigator();
 const AUTH_TOKEN_KEY = 'auth-token';
@@ -80,7 +81,10 @@ function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Screen name="Main" component={MainScreen} />
+          <>
+            <Stack.Screen name="Main" component={MainScreen} />
+            <Stack.Screen name="AddContact" component={AddContactScreen} />
+          </>
         ) : (
           <Stack.Screen name="Auth" component={AuthScreen} />
         )}
