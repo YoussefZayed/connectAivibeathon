@@ -45,7 +45,6 @@ function setupSwagger(app: INestApplication): void {
   SwaggerModule.setup('api', app, openApiDocument);
 }
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
