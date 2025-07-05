@@ -5,7 +5,11 @@ import useUserStore from '../store/user-store';
 import { getBaseUrl } from '../lib/ts-rest';
 import { API_URL, DEV_API_URL } from '@env';
 
-export default function MainScreen() {
+interface MainScreenProps {
+  navigation: any;
+}
+
+export default function MainScreen({ navigation }: MainScreenProps) {
   const { data, isLoading, error, refetch } = useHealthCheckQuery();
   const { user, logout } = useUserStore();
   const baseUrl = getBaseUrl();
@@ -36,6 +40,13 @@ export default function MainScreen() {
         className="bg-blue-500 p-2 rounded-md mb-4 z-10"
       >
         <Text className="text-white">Refetch API</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={() => navigation.navigate('AddContact')}
+        className="bg-green-500 p-2 rounded-md mb-4 z-10"
+      >
+        <Text className="text-white">Add Contact</Text>
       </Pressable>
 
       <Pressable onPress={logout} className="bg-red-500 p-2 rounded-md z-10">

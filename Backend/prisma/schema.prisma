@@ -28,3 +28,11 @@ model health {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 }
+
+// connect users
+model user_contacts {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  user_id   Int
+  contact_id Int
+}

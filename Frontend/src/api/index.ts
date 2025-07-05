@@ -55,3 +55,7 @@ export const useMeQuery = (
     ...options,
   });
 };
+
+export const useAddContactMutation = () => {
+  return client.addContact.useMutation();
+};
