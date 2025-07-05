@@ -70,26 +70,7 @@ export class UserRepository {
 
       return { contact1, contact2 };
     });
-  }
-
-  async updateSocialMediaUrls(
-    userId: number,
-    socialMediaUrls: {
-      linkedin_url?: string;
-      facebook_url?: string;
-      instagram_url?: string;
-      twitter_url?: string;
-      youtube_url?: string;
-      tiktok_url?: string;
-    },
-  ) {
-    return await this.db
-      .updateTable('user')
-      .set(socialMediaUrls)
-      .where('id', '=', userId)
-      .returningAll()
-      .executeTakeFirstOrThrow();
-  }
+    }
 
   async updateSocialMediaData(userId: number, socialMediaData: any) {
     return await this.db
