@@ -20,3 +20,5 @@ pnpm-debug.log*
 # Coverage
 coverage
 .nyc_output 
+
+pnpm-lock.yaml

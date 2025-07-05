@@ -1,24 +1,25 @@
-import './global.css';
-import { StatusBar } from 'expo-status-bar';
-import { Text, View, Pressable, TextInput } from 'react-native';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from './src/lib/react-query';
+import "./global.css";
+import { StatusBar } from "expo-status-bar";
+import { Text, View, Pressable, TextInput } from "react-native";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./src/lib/react-query";
 import {
   useHealthCheckQuery,
   useLoginMutation,
   useRegisterMutation,
   useMeQuery,
-} from './src/api';
-import useUserStore, { UserState } from './src/store/user-store';
-import { getBaseUrl } from './src/lib/ts-rest';
-import React from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+} from "./src/api";
+import useUserStore, { UserState } from "./src/store/user-store";
+import { getBaseUrl } from "./src/lib/ts-rest";
+import React from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import AppNavigator from "./src/navigation/AppNavigator";
 
-const AUTH_TOKEN_KEY = 'auth-token';
+const AUTH_TOKEN_KEY = "auth-token";
 
 function Auth() {
-  const [username, setUsername] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
   const { login } = useUserStore();
 
@@ -50,7 +51,7 @@ function Auth() {
 
       if (result.status === 201) {
         // You can automatically login the user or ask them to login
-        alert('Registration successful! Please login.');
+        alert("Registration successful! Please login.");
       } else {
         console.error(result.body);
       }
@@ -79,15 +80,13 @@ function Auth() {
       <Pressable
         onPress={handleLogin}
         className="bg-blue-500 p-3 rounded-md w-full items-center mb-2"
-        disabled={loginMutation.isPending}
-      >
+        disabled={loginMutation.isPending}>
         <Text className="text-white font-bold">Login</Text>
       </Pressable>
       <Pressable
         onPress={handleRegister}
         className="bg-green-500 p-3 rounded-md w-full items-center"
-        disabled={registerMutation.isPending}
-      >
+        disabled={registerMutation.isPending}>
         <Text className="text-white font-bold">Register</Text>
       </Pressable>
     </View>
@@ -105,7 +104,7 @@ function Main() {
         Welcome, {user?.username}!
       </Text>
 
-      <Text className="text-lg mb-2">API URL: {baseUrl || 'Not set'}</Text>
+      <Text className="text-lg mb-2">API URL: {baseUrl || "Not set"}</Text>
 
       <View className="p-4 border border-gray-300 rounded-lg mb-4 w-11/12">
         <Text className="text-lg font-semibold">API State (Health Check):</Text>
@@ -116,8 +115,7 @@ function Main() {
 
       <Pressable
         onPress={() => refetch()}
-        className="bg-blue-500 p-2 rounded-md mb-4"
-      >
+        className="bg-blue-500 p-2 rounded-md mb-4">
         <Text className="text-white">Refetch API</Text>
       </Pressable>
 
@@ -143,7 +141,7 @@ function AppContent() {
           setAccessToken(token);
         }
       } catch (e) {
-        console.error('Failed to rehydrate token from storage', e);
+        console.error("Failed to rehydrate token from storage", e);
       } finally {
         setIsHydrated(true);
       }
@@ -161,7 +159,7 @@ function AppContent() {
           await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
         }
       } catch (e) {
-        console.error('Failed to persist token', e);
+        console.error("Failed to persist token", e);
       }
     };
     // Only persist after the store has been rehydrated
@@ -207,7 +205,8 @@ function AppContent() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      {/* <AppContent /> */}
+      <AppNavigator />
     </QueryClientProvider>
   );
 }
