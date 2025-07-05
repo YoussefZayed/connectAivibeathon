@@ -9,15 +9,15 @@ import { KnowledgeBaseModule } from './knowledge-base/knowledge-base.module';
 
 @Module({
   imports: [
-    CoreModule, 
-    HealthModule, 
-    AuthModule, 
-    UserModule, 
+    CoreModule,
+    HealthModule,
+    AuthModule,
+    UserModule,
     EventsModule,
     VectorDbModule,
-    KnowledgeBaseModule
+    KnowledgeBaseModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

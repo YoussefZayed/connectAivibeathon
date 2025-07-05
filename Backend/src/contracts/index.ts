@@ -9,10 +9,10 @@ import { knowledgeBaseContract } from '../knowledge-base/knowledge-base.contract
 const c = initContract();
 
 export const contract = c.router({
-    ...healthRoutes,
-    ...authContract,
-    ...userContract,
-    ...eventsRoutes,
-    vectorDb: vectorDbContract,
-    knowledgeBase: knowledgeBaseContract,
+  ...healthRoutes,
+  ...authContract,
+  ...userContract,
+  ...eventsRoutes,
+  vectorDb: vectorDbContract,
+  knowledgeBase: knowledgeBaseContract,
 });

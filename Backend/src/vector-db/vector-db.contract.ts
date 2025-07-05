@@ -20,7 +20,7 @@ export const vectorDbContract = c.router({
     body: z.object({}),
     summary: 'Index all users from the database into the vector database',
   },
-  
+
   indexAllKnowledgeBaseEntries: {
     method: 'POST',
     path: '/vector-db/index-knowledge',
@@ -35,9 +35,10 @@ export const vectorDbContract = c.router({
       }),
     },
     body: z.object({}),
-    summary: 'Index all knowledge base entries from the database into the vector database',
+    summary:
+      'Index all knowledge base entries from the database into the vector database',
   },
-  
+
   storeKnowledgeBaseEntry: {
     method: 'POST',
     path: '/vector-db/store-knowledge',
@@ -64,17 +65,19 @@ export const vectorDbContract = c.router({
     }),
     summary: 'Store a knowledge base entry in the vector database',
   },
-  
+
   vectorQueryKnowledge: {
     method: 'POST',
     path: '/vector-db/query',
     responses: {
       200: z.object({
-        results: z.array(z.object({
-          text: z.string(),
-          metadata: z.record(z.any()),
-          score: z.number().optional(),
-        })),
+        results: z.array(
+          z.object({
+            text: z.string(),
+            metadata: z.record(z.any()),
+            score: z.number().optional(),
+          }),
+        ),
       }),
       400: z.object({
         message: z.string(),
