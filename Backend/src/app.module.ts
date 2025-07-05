@@ -5,8 +5,18 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { EventsModule } from './events/events.module';
 
+import { VectorDbModule } from './vector-db/vector-db.module';
+import { KnowledgeBaseModule } from './knowledge-base/knowledge-base.module';
+
 @Module({
-  imports: [CoreModule, HealthModule, AuthModule, UserModule, EventsModule],
+  imports: [
+    CoreModule, 
+    HealthModule, 
+    AuthModule, 
+    UserModule, 
+    VectorDbModule,
+    KnowledgeBaseModule
+  ],
   controllers: [],
   providers: [],
 })
