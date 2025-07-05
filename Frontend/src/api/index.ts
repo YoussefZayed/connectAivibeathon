@@ -1,6 +1,6 @@
 import { client } from '../lib/ts-rest';
 import useUserStore from '../store/user-store';
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, UseQueryOptions, useMutation } from '@tanstack/react-query';
 
 export const useHealthCheckQuery = () => {
     return client.healthCheck.useQuery(['healthCheck']);
@@ -71,6 +71,64 @@ export const useGetContactsQuery = () => {
       }
 
       const result = await client.getContacts.query({
+        extraHeaders: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (result.status === 200) {
+        return result;
+      }
+
+      throw result;
+    },
+    enabled: !!accessToken,
+  });
+};
+
+export const useCreateProfileMutation = () => {
+  const accessToken = useUserStore(s => s.accessToken);
+  
+  return useMutation({
+    mutationFn: async (variables: {
+      body: {
+        fullName: string;
+        industry?: string;
+        hobbies?: string;
+        lookingFor?: string;
+        bio?: string;
+      };
+    }) => {
+      if (!accessToken) {
+        throw new Error('No access token');
+      }
+
+      const result = await client.createProfile.mutate(variables, {
+        extraHeaders: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (result.status === 201) {
+        return result;
+      }
+
+      throw result;
+    },
+  });
+};
+
+export const useGetProfileQuery = () => {
+  const accessToken = useUserStore(s => s.accessToken);
+
+  return useQuery({
+    queryKey: ['profile', accessToken],
+    queryFn: async () => {
+      if (!accessToken) {
+        throw new Error('No access token');
+      }
+
+      const result = await client.getProfile.query({
         extraHeaders: {
           authorization: `Bearer ${accessToken}`,
         },

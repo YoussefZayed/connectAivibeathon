@@ -59,4 +59,30 @@ export class UserService {
     console.log('UserService: Retrieved contacts:', contacts);
     return contacts;
   }
+
+  async createOrUpdateProfile(userId: number, profileData: {
+    fullName: string;
+    industry?: string;
+    hobbies?: string;
+    lookingFor?: string;
+    bio?: string;
+  }) {
+    const existingProfile = await this.userRepository.getUserProfile(userId);
+    
+    if (existingProfile) {
+      // Update existing profile
+      return this.userRepository.updateUserProfile(userId, profileData);
+    } else {
+      // Create new profile
+      return this.userRepository.createUserProfile(userId, profileData);
+    }
+  }
+
+  async getUserProfile(userId: number) {
+    const profile = await this.userRepository.getUserProfile(userId);
+    if (!profile) {
+      throw new NotFoundException('User profile not found');
+    }
+    return profile;
+  }
 }
