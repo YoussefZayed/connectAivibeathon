@@ -1,6 +1,6 @@
 import { client } from '../lib/ts-rest';
 import useUserStore from '../store/user-store';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 export const useHealthCheckQuery = () => {
     return client.healthCheck.useQuery(['healthCheck']);
@@ -14,27 +14,44 @@ export const useRegisterMutation = () => {
     return client.register.useMutation();
 };
 
-export const useMeQuery = () => {
-    const accessToken = useUserStore((s) => s.accessToken);
+type MeQueryResult = Awaited<ReturnType<typeof client.me.query>>;
 
-    return useQuery({
-        queryKey: ['me', accessToken],
-        queryFn: async () => {
-            if (!accessToken) return null;
+export const useMeQuery = (
+  options?: Omit<
+    UseQueryOptions<
+      MeQueryResult,
+      unknown,
+      MeQueryResult,
+      [string, string | null]
+    >,
+    'queryKey' | 'queryFn'
+  >,
+) => {
+  const accessToken = useUserStore(s => s.accessToken);
 
-            const result = await client.me.query({
-                headers: {
-                    authorization: `Bearer ${accessToken}`,
-                },
-            });
+  return useQuery({
+    queryKey: ['me', accessToken],
+    queryFn: async () => {
+      if (!accessToken) {
+        // This should not happen because the query is disabled if there is no token
+        // but as a safeguard:
+        throw new Error('No access token');
+      }
 
-            if (result.status === 200) {
-                return result;
-            }
-
-            throw result;
+      const result = await client.me.query({
+        headers: {
+          authorization: `Bearer ${accessToken}`,
         },
-        enabled: !!accessToken,
-        retry: 1,
-    });
+      });
+
+      if (result.status === 200) {
+        return result;
+      }
+
+      throw result;
+    },
+    enabled: !!accessToken,
+    retry: 1,
+    ...options,
+  });
 };

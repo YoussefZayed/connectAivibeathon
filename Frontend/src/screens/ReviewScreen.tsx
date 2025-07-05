@@ -1,17 +1,34 @@
 import React from "react";
-import { View, Text, Pressable, SafeAreaView, StatusBar } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  SafeAreaView,
+  StatusBar,
+  Alert,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/AppNavigator";
+import { RootStackParamList } from "../navigation";
+import useUserStore from "../store/user-store";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Review">;
 
 export default function ReviewScreen({ route, navigation }: Props) {
   const { userData } = route.params;
+  const { completeOnboarding } = useUserStore();
 
   const handleConfirm = () => {
-    // TODO: Send the userData to your Nest.js backend to save in the database.
+    // TODO: Send userData to backend to save the profile.
     console.log("User data confirmed:", userData);
-    navigation.navigate("Main");
+
+    // Mark onboarding as complete. This will make the navigator default to 'Main' on next launch.
+    completeOnboarding();
+
+    // Navigate to the main dashboard.
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Main" }],
+    });
   };
 
   return (

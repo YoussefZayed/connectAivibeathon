@@ -6,24 +6,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import useUserStore from "../store/user-store";
 import { useMeQuery } from "../api";
 
-import AuthScreen from "@/screens/AuthScreen";
-import LoadingScreen from "@/screens/LoadingScreen";
-import AccountSetupScreen from "@/screens/AccountSetupScreen";
-import ReviewScreen from "@/screens/ReviewScreen";
-import HomeScreen from "@/screens/HomeScreen";
+import AuthScreen from "../screens/AuthScreen";
+import MainScreen from "../screens/MainScreen";
+import LoadingScreen from "../screens/LoadingScreen";
+import AccountSetupScreen from "../screens/AccountSetupScreen";
+import ReviewScreen from "../screens/ReviewScreen";
 
+// Define all possible routes and their parameters
 export type RootStackParamList = {
   Auth: undefined;
   AccountSetup: undefined;
   Review: { userData: Record<string, any> };
-  Main: undefined;
+  Main: undefined; // This is your main dashboard
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const AUTH_TOKEN_KEY = "auth-token";
 
 function AppNavigator() {
-  const { user, accessToken, logout, login, setAccessToken } = useUserStore();
+  const { user, accessToken, logout, login, setAccessToken, isNewUser } =
+    useUserStore();
   const [isHydrated, setIsHydrated] = React.useState(false);
 
   // Rehydrate token from storage on startup
@@ -46,7 +48,6 @@ function AppNavigator() {
   // Persist token to storage on change
   React.useEffect(() => {
     const persistToken = async () => {
-      if (!isHydrated) return;
       try {
         if (accessToken) {
           await AsyncStorage.setItem(AUTH_TOKEN_KEY, accessToken);
@@ -57,12 +58,17 @@ function AppNavigator() {
         console.error("Failed to persist token", e);
       }
     };
-    persistToken();
+    // Only persist after the store has been rehydrated
+    if (isHydrated) {
+      persistToken();
+    }
   }, [accessToken, isHydrated]);
 
-  // Fetch user if we have a token but no user object.
-  // This will run automatically and we'll react to its state in the useEffect below.
-  const { isLoading, isError, data, isSuccess } = useMeQuery();
+  // Fetch user if we have a token but no user object
+  const { isLoading, isError, data, isSuccess } = useMeQuery({
+    // Only run this query if there's a token and the store has been rehydrated
+    enabled: !!accessToken && isHydrated,
+  });
 
   React.useEffect(() => {
     if (isHydrated) {
@@ -83,15 +89,29 @@ function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <>
-            <Stack.Screen name="Main" component={HomeScreen} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Auth" component={AuthScreen} />
-            <Stack.Screen name="AccountSetup" component={AccountSetupScreen} />
+          <Stack.Group>
+            {/* Conditionally set the first screen */}
+            {isNewUser ? (
+              <Stack.Screen
+                name="AccountSetup"
+                component={AccountSetupScreen}
+              />
+            ) : (
+              <Stack.Screen name="Main" component={MainScreen} />
+            )}
+            {/* Other screens available in the logged-in stack */}
             <Stack.Screen name="Review" component={ReviewScreen} />
-          </>
+            {/* Add Main/AccountSetup here again so they can be navigated to */}
+            {!isNewUser && (
+              <Stack.Screen
+                name="AccountSetup"
+                component={AccountSetupScreen}
+              />
+            )}
+            {isNewUser && <Stack.Screen name="Main" component={MainScreen} />}
+          </Stack.Group>
+        ) : (
+          <Stack.Screen name="Auth" component={AuthScreen} />
         )}
       </Stack.Navigator>
     </NavigationContainer>
