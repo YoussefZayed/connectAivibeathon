@@ -19,6 +19,7 @@
     "@ts-rest/core": "^3.52.1",
     "@ts-rest/react-query": "^3.52.1",
     "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
     "expo": "~53.0.10",
     "expo-av": "^15.1.7",
     "expo-blur": "^14.1.5",

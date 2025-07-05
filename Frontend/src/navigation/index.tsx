@@ -14,15 +14,17 @@ import ReviewScreen from "../screens/ReviewScreen";
 import AddContactScreen from "../screens/AddContactScreen";
 import SocialsScreen from "../screens/SocialsScreen";
 import ContactsScreen from "../screens/ContactsScreen";
+import EventsScreen from "../screens/EventsScreen"; // 1. Import the new screen
 
 export type RootStackParamList = {
   Auth: undefined;
   AccountSetup: undefined;
   Socials: { userData: Record<string, any> };
   Review: { userData: Record<string, any> };
-  Main: undefined; // This is your main dashboard
-  AddContact: undefined; // Add the new screen here
+  Main: undefined;
+  AddContact: undefined;
   Contacts: undefined;
+  Events: undefined; // 2. Add Events to the list
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -112,6 +114,7 @@ function AppNavigator() {
               <Stack.Screen name="Main" component={MainScreen} />
               <Stack.Screen name="AddContact" component={AddContactScreen} />
               <Stack.Screen name="Contacts" component={ContactsScreen} />
+              <Stack.Screen name="Events" component={EventsScreen} />
             </Stack.Group>
           )
         ) : (

@@ -207,15 +207,13 @@ export default function MainScreen({ navigation }: { navigation: any }) {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => {
-                /* TODO: Navigate to Plan Activity screen */
-              }}
+              onPress={() => navigation.navigate("Events")}
               className="items-center flex-1">
               <View className="w-16 h-16 rounded-full justify-center items-center mb-2 bg-[#f59e0b]">
                 <Calendar color="#fff" size={28} />
               </View>
               <Text className="text-xs font-medium text-white text-center">
-                Plan Activity
+                Find Events
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -227,7 +225,7 @@ export default function MainScreen({ navigation }: { navigation: any }) {
                 <TrendingUp color="#fff" size={28} />
               </View>
               <Text className="text-xs font-medium text-white text-center">
-                View Stats
+                Plan Activity
               </Text>
             </TouchableOpacity>
           </View>
