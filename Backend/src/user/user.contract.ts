@@ -41,4 +41,56 @@ export const userContract = c.router({
     },
     summary: 'Get all user contacts',
   },
+  createProfile: {
+    method: 'POST',
+    path: '/users/profile',
+    body: z.object({
+      fullName: z.string(),
+      industry: z.string().optional(),
+      hobbies: z.string().optional(),
+      lookingFor: z.string().optional(),
+      bio: z.string().optional(),
+    }),
+    responses: {
+      201: z.object({
+        id: z.number(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+        user_id: z.number(),
+        full_name: z.string(),
+        industry: z.string().nullable(),
+        hobbies: z.string().nullable(),
+        looking_for: z.string().nullable(),
+        bio: z.string().nullable(),
+      }),
+      400: z.object({
+        message: z.string(),
+      }),
+      409: z.object({
+        message: z.string(),
+      }),
+    },
+    summary: 'Create or update user profile',
+  },
+  getProfile: {
+    method: 'GET',
+    path: '/users/profile',
+    responses: {
+      200: z.object({
+        id: z.number(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+        user_id: z.number(),
+        full_name: z.string(),
+        industry: z.string().nullable(),
+        hobbies: z.string().nullable(),
+        looking_for: z.string().nullable(),
+        bio: z.string().nullable(),
+      }),
+      404: z.object({
+        message: z.string(),
+      }),
+    },
+    summary: 'Get user profile',
+  },
 });
