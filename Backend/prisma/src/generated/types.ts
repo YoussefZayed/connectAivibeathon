@@ -14,7 +14,14 @@ export type user = {
     username: string;
     password: string;
 };
+export type user_contacts = {
+    id: Generated<number>;
+    createdAt: Generated<Timestamp>;
+    user_id: number;
+    contact_id: number;
+};
 export type DB = {
     health: health;
     user: user;
+    user_contacts: user_contacts;
 };

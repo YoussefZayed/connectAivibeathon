@@ -33,4 +33,12 @@ export class UserRepository {
             .where('id', '=', id)
             .executeTakeFirst();
     }
+
+    async addContact(userId: number, contactId: number) {
+        return await this.db
+            .insertInto('user_contacts')
+            .values({ user_id: userId, contact_id: contactId })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+    }
 } 
