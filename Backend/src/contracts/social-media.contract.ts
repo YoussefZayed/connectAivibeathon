@@ -29,8 +29,6 @@ const ScrapeAllProfilesSchema = z.object({
   userId: z.number(),
 });
 
-
-
 // Response schemas
 const SocialMediaUrlsResponse = z.object({
   success: z.boolean(),
@@ -71,17 +69,19 @@ const KnowledgeBaseResponse = z.object({
   success: z.boolean(),
   message: z.string(),
   data: z.object({
-    entries: z.array(z.object({
-      id: z.number(),
-      title: z.string(),
-      content: z.string(),
-      source_platform: z.string(),
-      source_type: z.string(),
-      summary: z.string().nullable(),
-      sentiment: z.string().nullable(),
-      confidence_score: z.number().nullable(),
-      created_at: z.string(),
-    })),
+    entries: z.array(
+      z.object({
+        id: z.number(),
+        title: z.string(),
+        content: z.string(),
+        source_platform: z.string(),
+        source_type: z.string(),
+        summary: z.string().nullable(),
+        sentiment: z.string().nullable(),
+        confidence_score: z.number().nullable(),
+        created_at: z.string(),
+      }),
+    ),
     total: z.number(),
     limit: z.number(),
     offset: z.number(),
@@ -100,7 +100,7 @@ export const socialMediaContract = {
     body: UpdateSocialMediaUrlsSchema,
     summary: 'Update social media profile URLs for a user',
   },
-  
+
   scrapeProfile: {
     method: 'POST' as const,
     path: '/social-media/scrape',
@@ -112,7 +112,7 @@ export const socialMediaContract = {
     body: ScrapeProfileSchema,
     summary: 'Scrape a specific social media profile',
   },
-  
+
   scrapeAllProfiles: {
     method: 'POST' as const,
     path: '/social-media/scrape-all',
@@ -128,7 +128,7 @@ export const socialMediaContract = {
     body: ScrapeAllProfilesSchema,
     summary: 'Scrape all social media profiles for a user',
   },
-  
+
   getProfileData: {
     method: 'GET' as const,
     path: '/social-media/profile/:platform/:userId',
@@ -141,7 +141,7 @@ export const socialMediaContract = {
     query: z.object({}),
     summary: 'Get scraped profile data for a specific platform',
   },
-  
+
   getKnowledgeBase: {
     method: 'GET' as const,
     path: '/social-media/knowledge-base/:userId',
@@ -156,4 +156,4 @@ export const socialMediaContract = {
     }),
     summary: 'Get knowledge base entries for a user',
   },
-}; 
+};

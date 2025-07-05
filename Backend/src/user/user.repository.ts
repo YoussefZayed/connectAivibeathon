@@ -100,41 +100,46 @@ export class UserRepository {
       })
       .where('id', '=', userId)
       .returningAll()
-            .executeTakeFirstOrThrow();
-    }
+      .executeTakeFirstOrThrow();
+  }
 
   async getContacts(userId: number) {
     return await this.db
-            .selectFrom('user_contacts as uc')
+      .selectFrom('user_contacts as uc')
       .innerJoin('user as u', 'uc.contact_id', 'u.id')
-            .select([
-                'u.id',
-                'u.username',
-                'u.linkedin_url',
-                'u.facebook_url',
-                'u.instagram_url',
-                'u.twitter_url',
+      .select([
+        'u.id',
+        'u.username',
+        'u.linkedin_url',
+        'u.facebook_url',
+        'u.instagram_url',
+        'u.twitter_url',
         'u.youtube_url',
-                'u.tiktok_url',
-                'u.social_media_data',
-                'u.last_scraped_at'
-            ])
-            .where('uc.user_id', '=', userId)
-            .execute();
-    }
+        'u.tiktok_url',
+        'u.social_media_data',
+        'u.last_scraped_at',
+      ])
+      .where('uc.user_id', '=', userId)
+      .execute();
+  }
 
-    async getUserContacts(userId: number) {
-        console.log('Getting contacts for user ID:', userId);
-        
-        const result = await this.db
-            .selectFrom('user_contacts')
-            .innerJoin('user', 'user.id', 'user_contacts.contact_id')
-            .select(['user.id', 'user.username', 'user.createdAt', 'user_contacts.createdAt as contactCreatedAt'])
-            .where('user_contacts.user_id', '=', userId)
-            .orderBy('user_contacts.createdAt', 'desc')
-            .execute();
-            
-        console.log('Query result:', result);
-        return result;
-    }
-} 
+  async getUserContacts(userId: number) {
+    console.log('Getting contacts for user ID:', userId);
+
+    const result = await this.db
+      .selectFrom('user_contacts')
+      .innerJoin('user', 'user.id', 'user_contacts.contact_id')
+      .select([
+        'user.id',
+        'user.username',
+        'user.createdAt',
+        'user_contacts.createdAt as contactCreatedAt',
+      ])
+      .where('user_contacts.user_id', '=', userId)
+      .orderBy('user_contacts.createdAt', 'desc')
+      .execute();
+
+    console.log('Query result:', result);
+    return result;
+  }
+}

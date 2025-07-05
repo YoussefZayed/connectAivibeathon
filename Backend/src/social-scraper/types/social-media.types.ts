@@ -230,4 +230,4 @@ export interface ScrapingResponse {
   data?: any;
   error?: string;
   platform: string;
-} 
+}
