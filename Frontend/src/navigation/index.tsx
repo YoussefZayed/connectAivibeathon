@@ -1,21 +1,33 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import useUserStore from '../store/user-store';
-import { useMeQuery } from '../api';
+import useUserStore from "../store/user-store";
+import { useMeQuery } from "../api";
 
-import AuthScreen from '../screens/AuthScreen';
-import MainScreen from '../screens/MainScreen';
-import LoadingScreen from '../screens/LoadingScreen';
-import AddContactScreen from '../screens/AddContactScreen';
+import AuthScreen from "../screens/AuthScreen";
+import MainScreen from "../screens/MainScreen";
+import LoadingScreen from "../screens/LoadingScreen";
+import AccountSetupScreen from "../screens/AccountSetupScreen";
+import ReviewScreen from "../screens/ReviewScreen";
+import AddContactScreen from "../screens/AddContactScreen";
 
-const Stack = createNativeStackNavigator();
-const AUTH_TOKEN_KEY = 'auth-token';
+// Define all possible routes and their parameters
+export type RootStackParamList = {
+  Auth: undefined;
+  AccountSetup: undefined;
+  Review: { userData: Record<string, any> };
+  Main: undefined; // This is your main dashboard
+  AddContact: undefined; // Add the new screen here
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+const AUTH_TOKEN_KEY = "auth-token";
 
 function AppNavigator() {
-  const { user, accessToken, logout, login, setAccessToken } = useUserStore();
+  const { user, accessToken, logout, login, setAccessToken, isNewUser } =
+    useUserStore();
   const [isHydrated, setIsHydrated] = React.useState(false);
 
   // Rehydrate token from storage on startup
@@ -27,7 +39,7 @@ function AppNavigator() {
           setAccessToken(token);
         }
       } catch (e) {
-        console.error('Failed to rehydrate token from storage', e);
+        console.error("Failed to rehydrate token from storage", e);
       } finally {
         setIsHydrated(true);
       }
@@ -45,7 +57,7 @@ function AppNavigator() {
           await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
         }
       } catch (e) {
-        console.error('Failed to persist token', e);
+        console.error("Failed to persist token", e);
       }
     };
     // Only persist after the store has been rehydrated
@@ -63,12 +75,10 @@ function AppNavigator() {
   React.useEffect(() => {
     if (isHydrated) {
       if (isError) {
-        // Token is invalid, clear the session
-        logout();
+        logout(); // Token is invalid, clear the session
       }
       if (isSuccess && data?.body) {
-        // Update the user object in the store
-        login(data.body, accessToken!);
+        login(data.body, accessToken!); // Update the user object
       }
     }
   }, [isError, isSuccess, data, logout, login, accessToken, isHydrated]);
@@ -81,10 +91,30 @@ function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <>
-            <Stack.Screen name="Main" component={MainScreen} />
+          <Stack.Group>
+            {/* Conditionally set the first screen */}
+
+            {isNewUser ? (
+              <Stack.Screen
+                name="AccountSetup"
+                component={AccountSetupScreen}
+              />
+            ) : (
+              <Stack.Screen name="Main" component={MainScreen} />
+            )}
+            {/* Other screens available in the logged-in stack */}
+            <Stack.Screen name="Review" component={ReviewScreen} />
             <Stack.Screen name="AddContact" component={AddContactScreen} />
-          </>
+
+            {/* Add Main/AccountSetup here again so they can be navigated to */}
+            {!isNewUser && (
+              <Stack.Screen
+                name="AccountSetup"
+                component={AccountSetupScreen}
+              />
+            )}
+            {isNewUser && <Stack.Screen name="Main" component={MainScreen} />}
+          </Stack.Group>
         ) : (
           <Stack.Screen name="Auth" component={AuthScreen} />
         )}
@@ -93,4 +123,4 @@ function AppNavigator() {
   );
 }
 
-export default AppNavigator; 
+export default AppNavigator;
