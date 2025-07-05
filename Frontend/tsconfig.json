@@ -5,12 +5,8 @@
     "esModuleInterop": true,
     "jsx": "react-native",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@contract": [
-        "../Backend/src/contracts"
-      ]
+      "@/*": ["./src/*"],
+      "@contract": ["../Backend/src/contracts"]
     }
   },
   "include": [

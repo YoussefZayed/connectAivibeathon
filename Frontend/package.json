@@ -22,6 +22,7 @@
     "expo": "~53.0.10",
     "expo-av": "^15.1.7",
     "expo-status-bar": "~2.2.3",
+    "native": "link:react-navigation\\native",
     "nativewind": "^4.1.23",
     "react": "19.0.0",
     "react-dom": "19.0.0",
