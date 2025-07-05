@@ -5,16 +5,25 @@ import {
   Pressable,
   SafeAreaView,
   StatusBar,
+<<<<<<< HEAD
   ScrollView,
+=======
+  Alert,
+  ActivityIndicator,
+>>>>>>> 428231945a3f9260d03410722327a31e5f6d0dc7
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import useUserStore from "../store/user-store";
+import { initClient } from "@ts-rest/core";
+import { contract } from "@contract";
+import { getBaseUrl } from "../lib/ts-rest";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Review">;
 
 export default function ReviewScreen({ route, navigation }: Props) {
   const { userData } = route.params;
+<<<<<<< HEAD
   console.log("Received userData in ReviewScreen:", userData);
   const { completeOnboarding } = useUserStore();
 
@@ -30,6 +39,90 @@ export default function ReviewScreen({ route, navigation }: Props) {
       index: 0,
       routes: [{ name: "Main" }],
     });
+=======
+  const { completeOnboarding, accessToken } = useUserStore();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleConfirm = async () => {
+    if (!accessToken) {
+      Alert.alert("Error", "You must be logged in to save your profile.");
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      console.log("Starting profile creation with data:", userData);
+      
+      // Transform userData to match backend contract
+      const profileData = {
+        fullName: userData["Full Name"],
+        industry: userData.Industry || undefined,
+        hobbies: userData.Hobbies || undefined,
+        lookingFor: userData["Looking For"] || undefined,
+        bio: userData.Bio || undefined,
+      };
+
+      console.log("Transformed profile data:", profileData);
+      console.log("Using access token:", accessToken);
+
+      // Create a direct client for this request
+      const directClient = initClient(contract, {
+        baseUrl: getBaseUrl(),
+        baseHeaders: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const result = await directClient.createProfile({
+        body: profileData,
+      });
+
+      console.log("API response:", result);
+
+      if (result.status === 201) {
+        console.log("Profile created successfully:", result.body);
+        
+        // Mark onboarding as complete
+        completeOnboarding();
+
+        // Navigate to the main dashboard immediately
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
+        });
+      } else {
+        throw new Error(`Unexpected status: ${result.status}`);
+      }
+    } catch (error: any) {
+      console.error("Error creating profile:", error);
+      
+      let errorMessage = "Failed to save your profile. Please try again.";
+      
+      if (error?.body?.message) {
+        errorMessage = error.body.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.status === 401) {
+        errorMessage = "Authentication failed. Please log in again.";
+      } else if (error?.status === 400) {
+        errorMessage = "Invalid data provided. Please check your information.";
+      }
+      
+      Alert.alert(
+        "Error",
+        errorMessage,
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.goBack(),
+          },
+        ]
+      );
+    } finally {
+      setIsLoading(false);
+    }
+>>>>>>> 428231945a3f9260d03410722327a31e5f6d0dc7
   };
 
   return (
@@ -68,7 +161,35 @@ export default function ReviewScreen({ route, navigation }: Props) {
             <Text className="text-gray-800 font-bold text-lg">Go Back</Text>
           </Pressable>
         </View>
+<<<<<<< HEAD
       </ScrollView>
+=======
+
+        <Pressable
+          onPress={handleConfirm}
+          disabled={isLoading}
+          className={`p-4 rounded-lg items-center mb-4 ${
+            isLoading ? 'bg-gray-400' : 'bg-green-500'
+          }`}>
+          <View className="flex-row items-center justify-center">
+            {isLoading && (
+              <ActivityIndicator size="small" color="white" className="mr-2" />
+            )}
+            <Text className="text-white font-bold text-lg">
+              {isLoading ? "Saving..." : "Confirm & Continue"}
+            </Text>
+          </View>
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          disabled={isLoading}
+          className="bg-gray-300 p-4 rounded-lg items-center">
+          <Text className="text-gray-800 font-bold text-lg">
+            Go Back & Redo
+          </Text>
+        </Pressable>
+      </View>
+>>>>>>> 428231945a3f9260d03410722327a31e5f6d0dc7
     </SafeAreaView>
   );
 }

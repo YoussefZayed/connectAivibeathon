@@ -1,10 +1,4 @@
--- AlterTable
-ALTER TABLE "user" ADD COLUMN     "facebook_url" TEXT,
-ADD COLUMN     "instagram_url" TEXT,
-ADD COLUMN     "linkedin_url" TEXT,
-ADD COLUMN     "tiktok_url" TEXT,
-ADD COLUMN     "twitter_url" TEXT,
-ADD COLUMN     "youtube_url" TEXT;
+-- Note: Social media columns already added in previous migration 20250705191849_add_social_media_columns
 
 -- CreateTable
 CREATE TABLE "facebook_profile" (

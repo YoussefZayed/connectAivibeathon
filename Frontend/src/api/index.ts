@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { client } from "../lib/ts-rest";
 import useUserStore from "../store/user-store";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+=======
+import { client } from '../lib/ts-rest';
+import useUserStore from '../store/user-store';
+import { useQuery, UseQueryOptions, useMutation } from '@tanstack/react-query';
+>>>>>>> 428231945a3f9260d03410722327a31e5f6d0dc7
 
 export const useHealthCheckQuery = () => {
   return client.healthCheck.useQuery(["healthCheck"]);
@@ -86,6 +92,7 @@ export const useGetContactsQuery = () => {
   });
 };
 
+<<<<<<< HEAD
 export const useGetEventsQuery = () => {
   const accessToken = useUserStore((s) => s.accessToken);
 
@@ -100,6 +107,52 @@ export const useGetEventsQuery = () => {
       const result = await client.getEvents.query({
         extraHeaders: {
           // Corrected from 'headers' to 'extraHeaders'
+=======
+export const useCreateProfileMutation = () => {
+  const accessToken = useUserStore(s => s.accessToken);
+  
+  return useMutation({
+    mutationFn: async (variables: {
+      body: {
+        fullName: string;
+        industry?: string;
+        hobbies?: string;
+        lookingFor?: string;
+        bio?: string;
+      };
+    }) => {
+      if (!accessToken) {
+        throw new Error('No access token');
+      }
+
+      const result = await client.createProfile.mutate(variables, {
+        extraHeaders: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (result.status === 201) {
+        return result;
+      }
+
+      throw result;
+    },
+  });
+};
+
+export const useGetProfileQuery = () => {
+  const accessToken = useUserStore(s => s.accessToken);
+
+  return useQuery({
+    queryKey: ['profile', accessToken],
+    queryFn: async () => {
+      if (!accessToken) {
+        throw new Error('No access token');
+      }
+
+      const result = await client.getProfile.query({
+        extraHeaders: {
+>>>>>>> 428231945a3f9260d03410722327a31e5f6d0dc7
           authorization: `Bearer ${accessToken}`,
         },
       });
@@ -108,10 +161,15 @@ export const useGetEventsQuery = () => {
         return result;
       }
 
+<<<<<<< HEAD
       // Let react-query handle the error state
       throw result;
     },
     // This query will not run until the access token is available
+=======
+      throw result;
+    },
+>>>>>>> 428231945a3f9260d03410722327a31e5f6d0dc7
     enabled: !!accessToken,
   });
 };

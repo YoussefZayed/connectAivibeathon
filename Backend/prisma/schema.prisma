@@ -18,12 +18,18 @@ model user {
   createdAt            DateTime               @default(now())
   username             String                 @unique
   password             String
+  // Social media profile URLs
+  linkedin_url         String?
   facebook_url         String?
   instagram_url        String?
-  linkedin_url         String?
-  tiktok_url           String?
   twitter_url          String?
   youtube_url          String?
+  tiktok_url           String?
+  // Scraped social media data stored as JSONB
+  social_media_data    Json? // This will be typed as any in the generated types
+  // Last scraping timestamp
+  last_scraped_at      DateTime?
+  profile              user_profile?
   facebook_profile     facebook_profile?
   instagram_profile    instagram_profile?
   knowledge_base_entry knowledge_base_entry[]
@@ -32,6 +38,19 @@ model user {
   tiktok_profile       tiktok_profile?
   twitter_profile      twitter_profile?
   youtube_profile      youtube_profile?
+}
+
+model user_profile {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user_id     Int      @unique
+  full_name   String
+  industry    String?
+  hobbies     String?
+  looking_for String?
+  bio         String?
+  user        user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model health {
