@@ -1,14 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Kysely } from 'kysely';
-import { DB } from '../generated/types';
 import { VectorDbService } from '../vector-db/vector-db.service';
+import { DatabaseService } from '../core/db/db.service';
 
 @Injectable()
 export class KnowledgeBaseService {
   private readonly logger = new Logger(KnowledgeBaseService.name);
 
   constructor(
-    private readonly db: Kysely<DB>,
+    private readonly dbService: DatabaseService,
     private readonly vectorDbService: VectorDbService,
   ) {}
 
@@ -31,7 +30,7 @@ export class KnowledgeBaseService {
   }) {
     try {
       // Store in the relational database
-      const result = await this.db
+      const result = await this.dbService.db
         .insertInto('knowledge_base_entry')
         .values({
           user_id: data.userId,
@@ -53,7 +52,7 @@ export class KnowledgeBaseService {
         .executeTakeFirstOrThrow();
 
       // Get the username for the user
-      const user = await this.db
+      const user = await this.dbService.db
         .selectFrom('user')
         .where('id', '=', data.userId)
         .select(['username'])
@@ -91,7 +90,7 @@ export class KnowledgeBaseService {
    */
   async getKnowledgeBaseEntries(userId: number) {
     try {
-      const entries = await this.db
+      const entries = await this.dbService.db
         .selectFrom('knowledge_base_entry')
         .where('user_id', '=', userId)
         .selectAll()
@@ -109,7 +108,7 @@ export class KnowledgeBaseService {
    */
   async getKnowledgeBaseEntry(id: number) {
     try {
-      const entry = await this.db
+      const entry = await this.dbService.db
         .selectFrom('knowledge_base_entry')
         .where('id', '=', id)
         .selectAll()

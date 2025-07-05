@@ -21,7 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev && pnpm prisma:generate",
-    "index:vector-db": "ts-node -r tsconfig-paths/register src/scripts/index-vector-db.ts"
+    "index:vector-db": "ts-node -r tsconfig-paths/register src/scripts/index-vector-db.ts",
+    "test:vector-db": "ts-node -r tsconfig-paths/register src/scripts/test-vector-db.ts"
   },
   "dependencies": {
     "@langchain/community": "^0.3.48",
