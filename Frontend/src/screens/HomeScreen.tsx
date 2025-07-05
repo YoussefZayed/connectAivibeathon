@@ -232,13 +232,13 @@ export default function MainScreen({ navigation }: any) {
           </Text>
           <View className="flex-row justify-around">
             <TouchableOpacity
-              onPress={() => navigation.navigate("AddContact")}
+              onPress={() => navigation.navigate("Contacts")}
               className="items-center">
               <View className="w-16 h-16 rounded-full justify-center items-center mb-2 bg-[#10b981]">
                 <Users color="#fff" size={28} />
               </View>
               <Text className="text-xs font-medium text-white text-center">
-                Add Contact
+                Contacts
               </Text>
             </TouchableOpacity>
             <TouchableOpacity

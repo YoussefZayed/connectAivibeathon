@@ -31,41 +31,26 @@ export default function AccountSetupScreen({ navigation }: Props) {
     Bio: "",
   });
 
-<<<<<<< HEAD
-  const handleStart = () => {
-    setIsProcessing(true);
-
-    // Simulate processing and navigate to the Socials screen
-    setTimeout(() => {
-      const mockUserData = {
-        "Full Name": "Jane Doe",
-        Hobbies: "Playing tennis, hiking, and reading.",
-        Industry: "Software Development",
-        "Looking For":
-          "Meeting new people for sports and professional networking.",
-      };
-
-      setIsProcessing(false);
-      navigation.navigate("Socials", { userData: mockUserData }); // Navigate to SocialsScreen
-    }, 2500);
-=======
   const handleInputChange = (field: keyof UserData, value: string) => {
-    setUserData(prev => ({
+    setUserData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
->>>>>>> 428231945a3f9260d03410722327a31e5f6d0dc7
   };
 
   const handleNext = () => {
     // Validate required fields
     const requiredFields: (keyof UserData)[] = ["Full Name"];
-    const missingFields = requiredFields.filter(field => !userData[field].trim());
-    
+    const missingFields = requiredFields.filter(
+      (field) => !userData[field].trim()
+    );
+
     if (missingFields.length > 0) {
       Alert.alert(
         "Missing Information",
-        `Please fill in the following required fields: ${missingFields.join(", ")}`
+        `Please fill in the following required fields: ${missingFields.join(
+          ", "
+        )}`
       );
       return;
     }
@@ -114,11 +99,46 @@ export default function AccountSetupScreen({ navigation }: Props) {
         </View>
 
         <View className="mb-6">
-          {renderInputField("Full Name", "Full Name", "Enter your full name", "default", false, true)}
-          {renderInputField("Industry", "Industry", "e.g., Software Development, Marketing, Healthcare", "default", false, false)}
-          {renderInputField("Hobbies", "Hobbies & Interests", "e.g., Playing tennis, hiking, reading", "default", true, false)}
-          {renderInputField("Looking For", "What are you looking for?", "e.g., Professional networking, sports partners, friends", "default", true, false)}
-          {renderInputField("Bio", "Bio", "Tell us a bit about yourself...", "default", true, false)}
+          {renderInputField(
+            "Full Name",
+            "Full Name",
+            "Enter your full name",
+            "default",
+            false,
+            true
+          )}
+          {renderInputField(
+            "Industry",
+            "Industry",
+            "e.g., Software Development, Marketing, Healthcare",
+            "default",
+            false,
+            false
+          )}
+          {renderInputField(
+            "Hobbies",
+            "Hobbies & Interests",
+            "e.g., Playing tennis, hiking, reading",
+            "default",
+            true,
+            false
+          )}
+          {renderInputField(
+            "Looking For",
+            "What are you looking for?",
+            "e.g., Professional networking, sports partners, friends",
+            "default",
+            true,
+            false
+          )}
+          {renderInputField(
+            "Bio",
+            "Bio",
+            "Tell us a bit about yourself...",
+            "default",
+            true,
+            false
+          )}
         </View>
 
         <Pressable
