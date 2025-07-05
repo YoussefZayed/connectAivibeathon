@@ -7,22 +7,22 @@ import axios from 'axios';
 import { ClientInferRequest, ClientInferResponseBody } from '@ts-rest/core';
 
 export const getBaseUrl = () => {
-    // In development, we prioritize the DEV_API_URL from the .env file.
-    if (__DEV__) {
-        if (DEV_API_URL) {
-            return DEV_API_URL;
-        }
+    // // In development, we prioritize the DEV_API_URL from the .env file.
+    // if (__DEV__) {
+    //     if (DEV_API_URL) {
+    //         return DEV_API_URL;
+    //     }
 
-        // If DEV_API_URL is not set, we fall back to platform-specific defaults.
-        if (Platform.OS === 'web') {
-            // For web development, your browser can access localhost directly.
-            return 'http://localhost:3000';
-        }
+    //     // If DEV_API_URL is not set, we fall back to platform-specific defaults.
+    //     if (Platform.OS === 'web') {
+    //         // For web development, your browser can access localhost directly.
+    //         return 'http://localhost:3000';
+    //     }
 
-        // For native development (Android Emulator), use the special IP that points to the host machine.
-        // For physical devices on the same Wi-Fi, you would use your computer's network IP.
-        return 'http://10.0.2.2:3000';
-    }
+    //     // For native development (Android Emulator), use the special IP that points to the host machine.
+    //     // For physical devices on the same Wi-Fi, you would use your computer's network IP.
+    //     return 'http://10.0.2.2:3000';
+    // }
 
     // In production, we use the mandatory API_URL from the .env file.
     return API_URL;

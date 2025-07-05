@@ -2,8 +2,12 @@ import React from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import useUserStore from '../store/user-store';
 import { useLoginMutation, useRegisterMutation } from '../api';
+import { getBaseUrl } from '../lib/ts-rest';
+import { API_URL, DEV_API_URL } from '@env';
+
 
 export default function AuthScreen() {
+  const baseUrl = getBaseUrl();
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [registerPressCount, setRegisterPressCount] = React.useState(0);
@@ -51,6 +55,14 @@ export default function AuthScreen() {
   return (
     <View className="flex-1 items-center justify-center bg-gray-100 p-4">
       <Text className="text-2xl font-bold mb-4">Welcome</Text>
+      <Text className="text-lg mb-2">API URL: {baseUrl || 'Not set'}</Text>
+      <Text className="text-lg mb-2">
+        Env API URL: {API_URL || 'Not set'}
+      </Text>
+      <Text className="text-lg mb-2">
+        Env Dev API URL: {DEV_API_URL || 'Not set'}
+      </Text>
+
       <TextInput
         className="w-full p-2 border border-gray-300 rounded-md mb-2"
         placeholder="Username"
