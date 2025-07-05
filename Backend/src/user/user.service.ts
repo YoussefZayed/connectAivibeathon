@@ -88,4 +88,36 @@ export class UserService {
     }
     return profile;
   }
+
+  async getSocialMediaUrls(userId: number) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    return {
+      facebook_url: user.facebook_url,
+      instagram_url: user.instagram_url,
+      linkedin_url: user.linkedin_url,
+      tiktok_url: user.tiktok_url,
+      twitter_url: user.twitter_url,
+      youtube_url: user.youtube_url,
+    };
+  }
+
+  async updateSocialMediaUrls(userId: number, socialMediaUrls: {
+    facebook_url?: string | null;
+    instagram_url?: string | null;
+    linkedin_url?: string | null;
+    tiktok_url?: string | null;
+    twitter_url?: string | null;
+    youtube_url?: string | null;
+  }) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    return this.userRepository.updateSocialMediaUrls(userId, socialMediaUrls);
+  }
 }

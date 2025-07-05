@@ -76,4 +76,48 @@ export class UserController {
       };
     });
   }
+
+  @TsRestHandler(userContract.getSocialMediaUrls)
+  @UseGuards(JwtAuthGuard)
+  async getSocialMediaUrls(@Request() req: { user: user }) {
+    return tsRestHandler(userContract.getSocialMediaUrls, async () => {
+      try {
+        const socialMediaUrls = await this.userService.getSocialMediaUrls(req.user.id);
+        return {
+          status: 200 as const,
+          body: socialMediaUrls,
+        };
+      } catch (error) {
+        if (error.status === 404) {
+          return {
+            status: 404 as const,
+            body: { message: error.message },
+          };
+        }
+        throw error;
+      }
+    });
+  }
+
+  @TsRestHandler(userContract.updateSocialMediaUrls)
+  @UseGuards(JwtAuthGuard)
+  async updateSocialMediaUrls(@Request() req: { user: user }) {
+    return tsRestHandler(userContract.updateSocialMediaUrls, async ({ body }) => {
+      try {
+        const updatedUrls = await this.userService.updateSocialMediaUrls(req.user.id, body);
+        return {
+          status: 200 as const,
+          body: updatedUrls,
+        };
+      } catch (error) {
+        if (error.status === 404) {
+          return {
+            status: 404 as const,
+            body: { message: error.message },
+          };
+        }
+        throw error;
+      }
+    });
+  }
 }
