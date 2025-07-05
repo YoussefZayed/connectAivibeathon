@@ -18,7 +18,7 @@ export class VectorDbService implements OnModuleInit {
     private readonly dbService: DatabaseService,
   ) {
     this.embeddings = new OpenAIEmbeddings({
-      openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
+      openAIApiKey: this.configService.get<string>('OPENAI_KEY'),
     });
 
     this.pool = new Pool({
