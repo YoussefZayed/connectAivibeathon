@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 
 @Injectable()
@@ -24,6 +24,21 @@ export class UserService {
             throw new NotFoundException('User to add not found');
         }
 
-        return this.userRepository.addContact(userId, contactUser.id);
+        // Prevent users from adding themselves
+        if (contactUser.id === userId) {
+            throw new ConflictException('Cannot add yourself as a contact');
+        }
+
+        // Check if contact already exists
+        const existingContact = await this.userRepository.checkContactExists(userId, contactUser.id);
+        if (existingContact) {
+            throw new ConflictException('Contact already exists');
+        }
+
+        // Create bidirectional contact relationship
+        const result = await this.userRepository.addBidirectionalContact(userId, contactUser.id);
+        
+        // Return the contact relationship from the requesting user's perspective
+        return result.contact1;
     }
 } 

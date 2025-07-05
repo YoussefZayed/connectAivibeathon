@@ -41,4 +41,34 @@ export class UserRepository {
             .returningAll()
             .executeTakeFirstOrThrow();
     }
+
+    async checkContactExists(userId: number, contactId: number) {
+        return await this.db
+            .selectFrom('user_contacts')
+            .selectAll()
+            .where('user_id', '=', userId)
+            .where('contact_id', '=', contactId)
+            .executeTakeFirst();
+    }
+
+    async addBidirectionalContact(userId: number, contactId: number) {
+        // Use a transaction to ensure both contacts are created or none
+        return await this.db.transaction().execute(async (trx) => {
+            // Add user as contact of contactId
+            const contact1 = await trx
+                .insertInto('user_contacts')
+                .values({ user_id: userId, contact_id: contactId })
+                .returningAll()
+                .executeTakeFirstOrThrow();
+
+            // Add contactId as contact of user
+            const contact2 = await trx
+                .insertInto('user_contacts')
+                .values({ user_id: contactId, contact_id: userId })
+                .returningAll()
+                .executeTakeFirstOrThrow();
+
+            return { contact1, contact2 };
+        });
+    }
 } 

@@ -17,6 +17,12 @@ export const userContract = c.router({
                 user_id: z.number(),
                 contact_id: z.number(),
             }),
+            404: z.object({
+                message: z.string(),
+            }),
+            409: z.object({
+                message: z.string(),
+            }),
         },
         summary: 'Add a user to contacts',
     },
