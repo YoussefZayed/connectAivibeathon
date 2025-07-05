@@ -108,6 +108,7 @@ export class UserRepository {
         hobbies: profileData.hobbies || null,
         looking_for: profileData.lookingFor || null,
         bio: profileData.bio || null,
+        updatedAt: new Date(),
       })
       .returningAll()
       .executeTakeFirstOrThrow();

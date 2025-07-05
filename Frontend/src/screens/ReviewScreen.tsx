@@ -11,17 +11,28 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import useUserStore from "../store/user-store";
-import { useCreateProfileMutation } from "../api";
+import { initClient } from "@ts-rest/core";
+import { contract } from "@contract";
+import { getBaseUrl } from "../lib/ts-rest";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Review">;
 
 export default function ReviewScreen({ route, navigation }: Props) {
   const { userData } = route.params;
-  const { completeOnboarding } = useUserStore();
-  const createProfileMutation = useCreateProfileMutation();
+  const { completeOnboarding, accessToken } = useUserStore();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleConfirm = async () => {
+    if (!accessToken) {
+      Alert.alert("Error", "You must be logged in to save your profile.");
+      return;
+    }
+
+    setIsLoading(true);
+    
     try {
+      console.log("Starting profile creation with data:", userData);
+      
       // Transform userData to match backend contract
       const profileData = {
         fullName: userData["Full Name"],
@@ -31,27 +42,66 @@ export default function ReviewScreen({ route, navigation }: Props) {
         bio: userData.Bio || undefined,
       };
 
-      const result = await createProfileMutation.mutateAsync({
+      console.log("Transformed profile data:", profileData);
+      console.log("Using access token:", accessToken);
+
+      // Create a direct client for this request
+      const directClient = initClient(contract, {
+        baseUrl: getBaseUrl(),
+        baseHeaders: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const result = await directClient.createProfile({
         body: profileData,
       });
+
+      console.log("API response:", result);
 
       if (result.status === 201) {
         console.log("Profile created successfully:", result.body);
         
-        // Mark onboarding as complete
-        completeOnboarding();
+        Alert.alert(
+          "Success!",
+          "Your profile has been saved successfully.",
+          [
+            {
+              text: "Continue",
+              onPress: () => {
+                // Mark onboarding as complete
+                completeOnboarding();
 
-        // Navigate to the main dashboard
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Main" }],
-        });
+                // Navigate to the main dashboard
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "Main" }],
+                });
+              },
+            },
+          ]
+        );
+      } else {
+        throw new Error(`Unexpected status: ${result.status}`);
       }
     } catch (error: any) {
       console.error("Error creating profile:", error);
+      
+      let errorMessage = "Failed to save your profile. Please try again.";
+      
+      if (error?.body?.message) {
+        errorMessage = error.body.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.status === 401) {
+        errorMessage = "Authentication failed. Please log in again.";
+      } else if (error?.status === 400) {
+        errorMessage = "Invalid data provided. Please check your information.";
+      }
+      
       Alert.alert(
         "Error",
-        "Failed to save your profile. Please try again.",
+        errorMessage,
         [
           {
             text: "OK",
@@ -59,6 +109,8 @@ export default function ReviewScreen({ route, navigation }: Props) {
           },
         ]
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,22 +133,22 @@ export default function ReviewScreen({ route, navigation }: Props) {
 
         <Pressable
           onPress={handleConfirm}
-          disabled={createProfileMutation.isPending}
+          disabled={isLoading}
           className={`p-4 rounded-lg items-center mb-4 ${
-            createProfileMutation.isPending ? 'bg-gray-400' : 'bg-green-500'
+            isLoading ? 'bg-gray-400' : 'bg-green-500'
           }`}>
           <View className="flex-row items-center justify-center">
-            {createProfileMutation.isPending && (
+            {isLoading && (
               <ActivityIndicator size="small" color="white" className="mr-2" />
             )}
             <Text className="text-white font-bold text-lg">
-              {createProfileMutation.isPending ? "Saving..." : "Confirm & Continue"}
+              {isLoading ? "Saving..." : "Confirm & Continue"}
             </Text>
           </View>
         </Pressable>
         <Pressable
           onPress={() => navigation.goBack()}
-          disabled={createProfileMutation.isPending}
+          disabled={isLoading}
           className="bg-gray-300 p-4 rounded-lg items-center">
           <Text className="text-gray-800 font-bold text-lg">
             Go Back & Redo
