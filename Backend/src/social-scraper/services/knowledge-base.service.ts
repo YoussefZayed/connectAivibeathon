@@ -1,9 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  SocialMediaData,
-  LinkedInProfile,
-  InstagramPost,
-} from '../types/social-media.types';
+import { LinkedInProfile, InstagramPost } from '../types/social-media.types';
 
 export interface KnowledgeBaseEntry {
   userId: number;
@@ -34,42 +30,42 @@ export class KnowledgeBaseService {
   private readonly logger = new Logger(KnowledgeBaseService.name);
 
   buildKnowledgeBase(
-    socialMediaData: SocialMediaData,
+    socialMediaData: any,
     userId: number,
   ): KnowledgeBaseEntry[] {
     this.logger.debug(`Building knowledge base for user ${userId}`);
     const entries: KnowledgeBaseEntry[] = [];
 
     // Process LinkedIn data
-    if (socialMediaData.linkedin) {
+    if (socialMediaData?.linkedin) {
       entries.push(
         ...this.processLinkedInData(socialMediaData.linkedin, userId),
       );
     }
 
     // Process LinkedIn posts
-    if (socialMediaData.linkedin_posts) {
+    if (socialMediaData?.linkedin_posts) {
       entries.push(
         ...this.processLinkedInPosts(socialMediaData.linkedin_posts, userId),
       );
     }
 
     // Process Instagram data
-    if (socialMediaData.instagram) {
+    if (socialMediaData?.instagram) {
       entries.push(
         ...this.processInstagramData(socialMediaData.instagram, userId),
       );
     }
 
     // Process Instagram posts
-    if (socialMediaData.instagram_posts) {
+    if (socialMediaData?.instagram_posts) {
       entries.push(
         ...this.processInstagramPosts(socialMediaData.instagram_posts, userId),
       );
     }
 
     // Process TikTok data
-    if (socialMediaData.tiktok) {
+    if (socialMediaData?.tiktok) {
       entries.push(...this.processTikTokData(socialMediaData.tiktok, userId));
     }
 
@@ -80,7 +76,7 @@ export class KnowledgeBaseService {
   }
 
   generateUserInsights(
-    socialMediaData: SocialMediaData,
+    socialMediaData: any,
     userId: number,
   ): UserInsights {
     const insights: UserInsights = {

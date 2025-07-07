@@ -53,7 +53,28 @@ export class SocialScraperController {
   @Get('knowledge-base/:userId')
   async getKnowledgeBase(
     @Param('userId', ParseIntPipe) userId: number,
-  ): Promise<{ message: string; data: any }> {
+  ): Promise<{ message: string; data?: any }> {
     return this.socialScraperService.getKnowledgeBase(userId);
+  }
+
+  // Debug endpoint to test BrightData integration
+  @Post('debug-linkedin/:userId')
+  async debugLinkedInScraping(@Param('userId') userId: string) {
+    try {
+      const userIdNum = parseInt(userId, 10);
+      const result =
+        await this.socialScraperService.debugLinkedInScraping(userIdNum);
+      return {
+        success: true,
+        debug: true,
+        data: result,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        debug: true,
+        error: error.message,
+      };
+    }
   }
 }

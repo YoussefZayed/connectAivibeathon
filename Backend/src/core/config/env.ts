@@ -12,6 +12,7 @@ export const envSchema = z.object({
   JWT_SECRET: z.string(),
   TAVILY_API_KEY: z.string(),
   OPENAI_KEY: z.string(),
+  BRIGHTDATA_API_KEY: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

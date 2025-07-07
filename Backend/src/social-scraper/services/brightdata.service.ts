@@ -34,10 +34,23 @@ export class BrightDataService {
 
   async scrapeLinkedInProfile(url: string): Promise<ScrapingResponse> {
     try {
+      this.logger.log(`Starting LinkedIn profile scraping for URL: ${url}`);
+      this.logger.log(
+        `Using dataset ID: ${this.config.datasets.linkedin_profile}`,
+      );
+
       const data = JSON.stringify([{ url }]);
+      this.logger.log(`Request payload: ${data}`);
+
       const response = await this.makeBrightDataRequest(
         this.config.datasets.linkedin_profile,
         data,
+      );
+
+      this.logger.log(`BrightData response status: ${response.status}`);
+      this.logger.log(`BrightData response data type: ${typeof response.data}`);
+      this.logger.log(
+        `BrightData response data: ${JSON.stringify(response.data, null, 2)}`,
       );
 
       if (
@@ -45,6 +58,7 @@ export class BrightDataService {
         Array.isArray(response.data) &&
         response.data.length > 0
       ) {
+        this.logger.log(`LinkedIn scraping successful, returning data`);
         return {
           success: true,
           data: response.data[0] as LinkedInProfile,
@@ -52,6 +66,9 @@ export class BrightDataService {
         };
       }
 
+      this.logger.warn(
+        `LinkedIn scraping failed: No data returned from BrightData API`,
+      );
       return {
         success: false,
         error: 'No data returned from LinkedIn scraping',
